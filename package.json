@@ -1,0 +1,7 @@
+{
+  "name": "koa-compose",
+  "description": "compose Koa middleware",
+  "version": "1.0.0",
+  "keywords": ["koa", "middleware", "compose"],
+  "files": ["index.js"]
+}
