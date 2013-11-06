@@ -24,19 +24,26 @@ module.exports = debug.enabled
  */
 
 function compose(middleware){
-  return function(next){
-    var i = middleware.length;
-    var curr;
+  return function *(downstream){
+    var i = 0;
+    var l = middleware.length;
+    var ctx = this;
+    var ended = false;
 
-    function *prev(){
-      yield next;
+    yield next();
+
+    function next(){
+      // end of stack
+      if (i === l) {
+        // already ended, developer error
+        if (ended) throw new Error('stack called out of bounds');
+        ended = true;
+        return downstream || noop;
+      }
+
+      // return the next generator
+      return middleware[i++].call(ctx, next);
     }
-
-    while (curr = middleware[--i]) {
-      prev = curr(prev);
-    }
-
-    return prev;
   }
 }
 
@@ -82,4 +89,18 @@ function instrument(next) {
     yield next;
     debug('\033[32m<-\033[0m %s', name);
   }
+}
+
+/**
+ * No-operation yieldable.
+ * So users don't get a "not a function" error
+ * when `next` is not defined.
+ *
+ * .nextTick'd because I get "generator already finished" otherwise.
+ *
+ * @api private
+ */
+
+function noop(done){
+  process.nextTick(done);
 }

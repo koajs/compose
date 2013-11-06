@@ -6,5 +6,13 @@
   "keywords": ["koa", "middleware", "compose"],
   "files": ["index.js"],
   "dependencies": { "debug": "*" },
+  "devDependencies": {
+    "co": "2",
+    "mocha": "1",
+    "should": "2"
+  },
+  "scripts": {
+    "test": "make test"
+  },
   "license": "MIT"
 }
