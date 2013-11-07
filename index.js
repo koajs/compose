@@ -24,26 +24,23 @@ module.exports = debug.enabled
  */
 
 function compose(middleware){
-  var l = middleware.length;
-
   return function *(downstream){
-    var i = 0;
+    var done = false;
     var ctx = this;
-    var ended = false;
+    var i = 0;
 
     yield next();
 
     function next(){
-      // end of stack
-      if (i === l) {
-        // already ended, developer error
-        if (ended) throw new Error('stack called out of bounds');
-        ended = true;
+      var mw = middleware[i++];
+      
+      if (!mw) {
+        if (done) throw new Error('middleware yielded control multiple times');
+        done = true;
         return downstream || noop;
       }
 
-      // return the next generator
-      return middleware[i++].call(ctx, next);
+      return mw.call(ctx, next);
     }
   }
 }
