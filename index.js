@@ -24,9 +24,10 @@ module.exports = debug.enabled
  */
 
 function compose(middleware){
+  var l = middleware.length;
+
   return function *(downstream){
     var i = 0;
-    var l = middleware.length;
     var ctx = this;
     var ended = false;
 
