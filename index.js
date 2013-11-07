@@ -89,21 +89,17 @@ function instrument(next) {
   return function *wrap(){
     var name = next.name || '-';
     debug('\033[33m->\033[0m %s', name);
-    yield next;
+    yield next();
     debug('\033[32m<-\033[0m %s', name);
   }
 }
 
 /**
- * No-operation yieldable.
- * So users don't get a "not a function" error
- * when `next` is not defined.
- *
- * .nextTick'd because I get "generator already finished" otherwise.
+ * Noop.
  *
  * @api private
  */
 
 function noop(done){
-  setImmediate(done);
+  done();
 }
