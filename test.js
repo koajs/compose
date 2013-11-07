@@ -14,25 +14,25 @@ describe('Koa Compose', function(){
 
     stack.push(function *(next){
       arr.push(1);
-      wait(1);
+      yield wait(1);
       yield next();
-      wait(1);
+      yield wait(1);
       arr.push(6);
     })
 
     stack.push(function *(next){
       arr.push(2);
-      wait(1);
+      yield wait(1);
       yield next();
-      wait(1);
+      yield wait(1);
       arr.push(5);
     })
 
     stack.push(function *(next){
       arr.push(3);
-      wait(1);
+      yield wait(1);
       yield next();
-      wait(1);
+      yield wait(1);
       arr.push(4);
     })
 
@@ -130,7 +130,9 @@ describe('Koa Compose', function(){
     stack.push(function *(next){
       arr.push(1);
       try {
+        arr.push(6);
         yield next();
+        arr.push(7);
       } catch (err) {
         arr.push(2);
       }
@@ -146,7 +148,7 @@ describe('Koa Compose', function(){
     co(compose(stack))(function(err){
       if (err) throw err;
 
-      arr.should.eql([1, 4, 2, 3]);
+      arr.should.eql([1, 6, 4, 2, 3]);
       done();
     })
   })
