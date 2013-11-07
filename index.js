@@ -105,5 +105,5 @@ function instrument(next) {
  */
 
 function noop(done){
-  process.nextTick(done);
+  setImmediate(done);
 }
