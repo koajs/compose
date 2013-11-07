@@ -56,19 +56,24 @@ function compose(middleware){
  */
 
 function instrumented(middleware){
-  return function(next){
-    var i = middleware.length;
-    var curr;
+  return function *(downstream){
+    var done = false;
+    var ctx = this;
+    var i = 0;
 
-    function *prev(){
-      yield next;
+    yield next();
+
+    function next(){
+      var mw = middleware[i++];
+      
+      if (!mw) {
+        if (done) throw new Error('middleware yielded control multiple times');
+        done = true;
+        return downstream || noop;
+      }
+
+      return mw.call(ctx, next);
     }
-
-    while (curr = middleware[--i]) {
-      prev = instrument(curr(prev));
-    }
-
-    return prev;
   }
 }
 
