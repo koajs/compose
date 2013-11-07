@@ -25,14 +25,14 @@ function compose(middleware){
 
     function next(){
       var mw = middleware[i++];
-      
+
       if (!mw) {
         if (done) throw new Error('middleware yielded control multiple times');
         done = true;
         return downstream || noop;
       }
 
-      return mw.call(ctx, next);
+      return mw.call(ctx, next());
     }
   }
 }

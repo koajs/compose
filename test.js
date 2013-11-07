@@ -15,7 +15,7 @@ describe('Koa Compose', function(){
     stack.push(function *(next){
       arr.push(1);
       yield wait(1);
-      yield next();
+      yield next;
       yield wait(1);
       arr.push(6);
     })
@@ -23,7 +23,7 @@ describe('Koa Compose', function(){
     stack.push(function *(next){
       arr.push(2);
       yield wait(1);
-      yield next();
+      yield next;
       yield wait(1);
       arr.push(5);
     })
@@ -31,7 +31,7 @@ describe('Koa Compose', function(){
     stack.push(function *(next){
       arr.push(3);
       yield wait(1);
-      yield next();
+      yield next;
       yield wait(1);
       arr.push(4);
     })
@@ -58,13 +58,13 @@ describe('Koa Compose', function(){
 
       stack.push(function* (next){
         arr.push(1);
-        yield next();
+        yield next;
         arr.push(4);
       });
 
       stack.push(function *(next){
         arr.push(2);
-        yield next();
+        yield next;
         arr.push(3);
       });
 
@@ -83,7 +83,7 @@ describe('Koa Compose', function(){
     var stack = [];
 
     stack.push(function *(next){
-      yield next();
+      yield next;
     });
 
     co(compose(stack))(done);
@@ -109,12 +109,12 @@ describe('Koa Compose', function(){
     co.call(ctx, compose(stack))(done);
   })
 
-  it('should throw when `next()` out of the stack', function(done){
+  it('should throw when `next` out of the stack', function(done){
     var stack = [];
 
     stack.push(function *(next){
-      yield next();
-      yield next();
+      yield next;
+      yield next;
     })
 
     co(compose(stack))(function(err){
@@ -131,7 +131,7 @@ describe('Koa Compose', function(){
       arr.push(1);
       try {
         arr.push(6);
-        yield next();
+        yield next;
         arr.push(7);
       } catch (err) {
         arr.push(2);
