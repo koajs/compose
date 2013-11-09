@@ -29,7 +29,7 @@ function compose(middleware){
       if (!mw) {
         if (done) throw new Error('middleware yielded control multiple times');
         done = true;
-        return downstream || noop;
+        return downstream || noop();
       }
 
       return mw.call(ctx, next());
@@ -43,6 +43,4 @@ function compose(middleware){
  * @api private
  */
 
-function noop(done){
-  done();
-}
+function *noop(){}
