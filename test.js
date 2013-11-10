@@ -89,6 +89,16 @@ describe('Koa Compose', function(){
     co(compose(stack))(done);
   })
 
+  it('should work when yielding at the end of the stack with yield*', function(done) {
+    var stack = [];
+
+    stack.push(function *(next){
+      yield* next;
+    });
+
+    co(compose(stack))(done);
+  })
+
   it('should keep the context', function(done){
     var ctx = {};
 
