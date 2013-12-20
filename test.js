@@ -116,7 +116,7 @@ describe('Koa Compose', function(){
       this.should.equal(ctx);
     })
 
-    co.call(ctx, compose(stack))(done);
+    co(compose(stack)).call(ctx, done);
   })
 
   it('should throw when `next` out of the stack', function(done){

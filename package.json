@@ -7,9 +7,9 @@
   "files": ["index.js"],
   "dependencies": { "debug": "*" },
   "devDependencies": {
-    "co": "2",
-    "mocha": "1",
-    "should": "2"
+    "co": "~3.0.1",
+    "mocha": "~1.6.0",
+    "should": "~2.1.0"
   },
   "scripts": {
     "test": "make test"
