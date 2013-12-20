@@ -21,7 +21,7 @@ function compose(middleware){
     var ctx = this;
     var i = 0;
 
-    yield next();
+    yield *next();
 
     function next(){
       var mw = middleware[i++];
