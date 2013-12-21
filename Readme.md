@@ -1,5 +1,5 @@
 
-# koa-compose
+# koa-compose [![Build Status](https://travis-ci.org/koajs/compose.png)](https://travis-ci.org/koajs/compose)
 
  Compose middleware.
 
