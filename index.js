@@ -16,24 +16,17 @@ module.exports = compose;
  */
 
 function compose(middleware){
-  return function *(downstream){
-    var done = false;
-    var ctx = this;
-    var i = 0;
+  return function *(next){
+    var i = middleware.length;
+    var prev = next || noop();
+    var curr;
 
-    yield *next();
-
-    function next(){
-      var mw = middleware[i++];
-
-      if (!mw) {
-        if (done) throw new Error('middleware yielded control multiple times');
-        done = true;
-        return downstream || noop();
-      }
-
-      return mw.call(ctx, next());
+    while (i--) {
+      curr = middleware[i];
+      prev = curr.call(this, prev);
     }
+
+    yield *prev;
   }
 }
 
