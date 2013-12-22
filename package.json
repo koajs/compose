@@ -3,13 +3,22 @@
   "description": "compose Koa middleware",
   "repository": "koajs/compose",
   "version": "2.0.1",
-  "keywords": ["koa", "middleware", "compose"],
-  "files": ["index.js"],
-  "dependencies": { "debug": "*" },
+  "keywords": [
+    "koa",
+    "middleware",
+    "compose"
+  ],
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "debug": "*"
+  },
   "devDependencies": {
     "co": "~3.0.1",
     "mocha": "~1.6.0",
-    "should": "~2.1.0"
+    "should": "~2.1.0",
+    "koa": "~0.1.2"
   },
   "scripts": {
     "test": "make test"
