@@ -84,10 +84,7 @@ function wrap(curr, prev, name) {
     this._level = this._level || 0;
 
     // downstream
-    console.log('  \033[1m%d | \033[0m>> \033[36m%s\033[0m', this._level, name);
-    console.log();
-    console.log(fmt(this.response, { depth: 5, colors: true }).replace(/^/gm, '  '));
-    console.log();
+    output(this, 'down', name);
 
     // yield
     this._level++;
@@ -95,11 +92,32 @@ function wrap(curr, prev, name) {
     this._level--;
 
     // upstream
-    console.log('  \033[1m%d | \033[0m<< \033[36m%s\033[0m', this._level, name);
-    console.log();
-    console.log(fmt(this.response, { depth: 5, colors: true }).replace(/^/gm, '  '));
-    console.log();
+    output(this, 'up', name);
   }.call(this, prev));
+}
+
+/**
+ * Output debugging information.
+ */
+
+function output(ctx, direction, name) {
+  direction = 'up' == direction ? '<<' : '>>';
+  console.log('  \033[1m%d \033[0m%s \033[36m%s\033[0m', ctx._level, direction, name);
+  console.log('  \033[90mstatus\033[0m: %s %s', ctx.status, ctx.response.statusString);
+  console.log('  \033[90mheader\033[0m:');
+  header(ctx);
+  console.log('  \033[90mbody\033[0m: %j', ctx.body);
+  console.log();
+}
+
+/**
+ * Output header fields.
+ */
+
+function header(ctx) {
+  for (var key in ctx.response.header) {
+    console.log('    \033[90m%s\033[0m: %s', key, ctx.response.header[key]);
+  }
 }
 
 /**
