@@ -25,7 +25,11 @@ module.exports = debug.enabled
  */
 
 function compose(middleware){
-  return function *(next){
+  composition._name = label(middleware);
+
+  return composition;
+
+  function *composition(next){
     var i = middleware.length;
     var prev = next || noop();
     var curr;
@@ -56,16 +60,20 @@ function instrumented(middleware){
   console.warn('application - it is designed for a development');
   console.warn('environment only.\n');
 
-  return function *(next){
+  composition._name = label(middleware);
+
+  return composition
+
+  function *composition(next){
     var i = middleware.length;
     var prev = next || noop();
-    var name = prev.name || 'noop';
+    var name = prev._name || prev.name || 'noop';
     var curr;
 
     while (i--) {
       curr = middleware[i];
       prev = wrap.call(this, curr, prev, name);
-      name = curr.name;
+      name = curr._name || curr.name;
     }
 
     yield *prev;
@@ -108,6 +116,20 @@ function output(ctx, direction, name) {
   header(ctx);
   console.log('  \033[90mbody\033[0m: %j', ctx.body);
   console.log();
+}
+
+/**
+ * Create the ._name of a composed middleware for better debugging.
+ *
+ * @param {Array} middleware
+ * @return {String}
+ * @api private
+ */
+
+function label(middleware) {
+  return middleware.map(function(fn){
+    return fn._name || fn.name || '-';
+  }).join(' | ');
 }
 
 /**
