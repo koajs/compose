@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -59,13 +58,13 @@ function instrumented(middleware){
   return function *(next){
     var i = middleware.length;
     var prev = next || noop();
-    var name = prev.name || prev._name || 'noop';
+    var name = prev._name || prev.name || 'noop';
     var curr;
 
     while (i--) {
       curr = middleware[i];
       prev = wrap.call(this, curr, prev, name);
-      name = curr.name || curr._name;
+      name = curr._name || curr.name;
     }
 
     yield *prev;
