@@ -2,7 +2,7 @@
   "name": "koa-compose",
   "description": "compose Koa middleware",
   "repository": "koajs/compose",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "keywords": [
     "koa",
     "middleware",
@@ -18,7 +18,7 @@
     "co": "~3.0.1",
     "mocha": "~1.6.0",
     "should": "~2.1.0",
-    "koa": "~0.1.2"
+    "koa": "~0.3.0"
   },
   "scripts": {
     "test": "make test"
