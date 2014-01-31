@@ -34,7 +34,7 @@ function compose(middleware){
       prev = curr.call(this, prev);
     }
 
-    yield *prev;
+    return yield *prev;
   }
 }
 
@@ -67,7 +67,7 @@ function instrumented(middleware){
       name = curr._name || curr.name;
     }
 
-    yield *prev;
+    return yield *prev;
   }
 }
 
@@ -87,11 +87,12 @@ function wrap(curr, prev, name) {
 
     // yield
     this._level++;
-    yield next;
+    var res = yield next;
     this._level--;
 
     // upstream
     output(this, 'up', name);
+    return res;
   }.call(this, prev));
 }
 
