@@ -1,3 +1,4 @@
+ * composed mw now returns the value returned from first mw
 
 2.1.0 / 2013-12-22
 ==================

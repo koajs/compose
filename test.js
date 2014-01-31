@@ -162,4 +162,20 @@ describe('Koa Compose', function(){
       done();
     })
   })
+
+  it('should not lose the downstream return value', function(done){
+    var stack = [];
+    stack.push(function*(next) {
+      return yield* next;
+    });
+    stack.push(function*(next) {
+      yield* next;
+      return 1;
+    });
+    co(compose(stack))(function(err, res) {
+      if (err) throw err;
+      res.should.equal(1);
+      done();
+    });
+  });
 })
