@@ -34,7 +34,7 @@ function compose(middleware){
       prev = curr.call(this, prev);
     }
 
-    yield *prev;
+    return yield *prev;
   }
 }
 
