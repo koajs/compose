@@ -105,14 +105,17 @@ describe('Koa Compose', function(){
     var stack = [];
 
     stack.push(function *(next){
+      yield next
       this.should.equal(ctx);
     })
 
     stack.push(function *(next){
+      yield next
       this.should.equal(ctx);
     })
 
     stack.push(function *(next){
+      yield next
       this.should.equal(ctx);
     })
 
