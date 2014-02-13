@@ -101,11 +101,11 @@ function wrap(curr, prev, name) {
 
 function output(ctx, direction, name) {
   direction = 'up' == direction ? '<<' : '>>';
-  console.log('  \x1B[1m%d \x1B%s \x1B[36m%s\x1B', ctx._level, direction, name);
-  console.log('  \x1B[90mstatus\x1B: %s %s', ctx.status, ctx.response.statusString);
-  console.log('  \x1B[90mheader\x1B:');
+  console.log('  \x1B[1m%d \x1B[0m%s \x1B[36m%s\x1B[0m', ctx._level, direction, name);
+  console.log('  \x1B[90mstatus\x1B[0m: %s %s', ctx.status, ctx.response.statusString);
+  console.log('  \x1B[90mheader\x1B[0m:');
   header(ctx);
-  console.log('  \x1B[90mbody\x1B: %j', ctx.body);
+  console.log('  \x1B[90mbody\x1B[0m: %j', ctx.body);
   console.log();
 }
 
@@ -115,7 +115,7 @@ function output(ctx, direction, name) {
 
 function header(ctx) {
   for (var key in ctx.response.header) {
-    console.log('    \x1B[90m%s\x1B: %s', key, ctx.response.header[key]);
+    console.log('    \x1B[90m%s\x1B[0m: %s', key, ctx.response.header[key]);
   }
 }
 
