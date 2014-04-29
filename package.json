@@ -11,9 +11,7 @@
   "files": [
     "index.js"
   ],
-  "dependencies": {
-    "debug": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "co": "~3.0.1",
     "mocha": "~1.6.0",
