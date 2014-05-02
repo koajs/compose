@@ -2,7 +2,7 @@
   "name": "koa-compose",
   "description": "compose Koa middleware",
   "repository": "koajs/compose",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "keywords": [
     "koa",
     "middleware",
