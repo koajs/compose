@@ -122,20 +122,6 @@ describe('Koa Compose', function(){
     co(compose(stack)).call(ctx, done);
   })
 
-  it('should throw when `next` out of the stack', function(done){
-    var stack = [];
-
-    stack.push(function *(next){
-      yield next;
-      yield next;
-    })
-
-    co(compose(stack))(function(err){
-      err.should.be.ok;
-      done();
-    })
-  })
-
   it('should catch downstream errors', function(done){
     var arr = [];
     var stack = [];
