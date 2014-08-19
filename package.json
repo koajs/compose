@@ -13,10 +13,10 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "co": "~3.0.1",
-    "mocha": "~1.6.0",
-    "should": "~2.1.0",
-    "koa": "~0.3.0"
+    "co": "3",
+    "mocha": "1",
+    "should": "2",
+    "koa": "0"
   },
   "scripts": {
     "test": "make test"
