@@ -3,6 +3,12 @@
 
  Compose middleware.
 
+## Installation
+
+```js
+$ npm install koa-compose
+```
+
 ## API
 
 ### compose([a, b, c, ...])
