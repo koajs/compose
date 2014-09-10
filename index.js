@@ -17,16 +17,15 @@ module.exports = compose;
 
 function compose(middleware){
   return function *(next){
+    if (!next) next = noop();
+
     var i = middleware.length;
-    var prev = next || noop();
-    var curr;
 
     while (i--) {
-      curr = middleware[i];
-      prev = curr.call(this, prev);
+      next = middleware[i].call(this, next);
     }
 
-    yield *prev;
+    yield *next;
   }
 }
 
