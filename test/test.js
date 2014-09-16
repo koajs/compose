@@ -1,5 +1,5 @@
 var co = require('co');
-var compose = require('./');
+var compose = require('..');
 
 function wait(ms) {
   return function (done) {
