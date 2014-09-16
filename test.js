@@ -151,4 +151,17 @@ describe('Koa Compose', function(){
       done();
     })
   })
+  
+  it('should return final value', function (done) {
+    var stack = [];
+    stack.push(function *(next) {
+      yield next;
+      return 'a';
+    })
+    
+    co(compose(stack))(function (err, res) {
+      res.should.eql('a');
+      done();
+    })
+  })
 })
