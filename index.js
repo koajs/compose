@@ -1,3 +1,4 @@
+var composition = require('composition');
 
 /**
  * Expose compositor.
@@ -11,11 +12,14 @@ module.exports = compose;
  * of all those which are passed.
  *
  * @param {Array} middleware
+ * @param {Boolean} experimental
  * @return {Function}
  * @api public
  */
 
-function compose(middleware){
+function compose(middleware, experimental){
+  if (experimental) return composition(middleware);
+
   return function *(next){
     if (!next) next = noop();
 
