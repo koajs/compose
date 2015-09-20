@@ -1,136 +1,107 @@
-var co = require('co');
-var compose = require('..');
+'use strict'
+
+const co = require('co');
+const compose = require('..');
+const assert = require('assert');
 
 function wait(ms) {
-  return function (done) {
-    setTimeout(done, ms || 0);
-  }
+  return new Promise(resolve => setTimeout(resolve, ms || 1))
 }
 
 describe('Koa Compose', function(){
-  it('should work', function(done){
+  it('should work', function(){
     var arr = [];
     var stack = [];
 
-    stack.push(function *(next){
+    stack.push(function *(context, next){
       arr.push(1);
       yield wait(1);
-      yield next;
+      yield next();
       yield wait(1);
       arr.push(6);
     })
 
-    stack.push(function *(next){
+    stack.push(function *(context, next){
       arr.push(2);
       yield wait(1);
-      yield next;
+      yield next();
       yield wait(1);
       arr.push(5);
     })
 
-    stack.push(function *(next){
+    stack.push(function *(context, next){
       arr.push(3);
       yield wait(1);
-      yield next;
+      yield next();
       yield wait(1);
       arr.push(4);
     })
 
-    co(compose(stack))(function(err){
-      if (err) throw err;
-
+    return compose(stack.map(fn => co.wrap(fn)))({}).then(function () {
       arr.should.eql([1, 2, 3, 4, 5, 6]);
-      done();
     })
   })
 
-  it('should work with 0 middleware', function(done){
-    co(compose([]))(done);
+  it('should work with 0 middleware', function(){
+    return compose([])({});
   })
 
-  it('should work within a generator', function(done){
-    var arr = [];
+  it('should work when yielding at the end of the stack', function() {
+    var stack = [];
+    var called = false;
 
-    co(function *(){
-      arr.push(0);
+    stack.push(function *(ctx, next){
+      yield next();
+      called = true;
+    });
 
-      var stack = [];
-
-      stack.push(function* (next){
-        arr.push(1);
-        yield next;
-        arr.push(4);
-      });
-
-      stack.push(function *(next){
-        arr.push(2);
-        yield next;
-        arr.push(3);
-      });
-
-      yield compose(stack)
-
-      arr.push(5);
-    })(function(err){
-      if (err) throw err;
-
-      arr.should.eql([0, 1, 2, 3, 4, 5]);
-      done();
-    })
+    return compose(stack.map(co.wrap))({}).then(function () {
+      assert(called)
+    });
   })
 
-  it('should work when yielding at the end of the stack', function(done) {
+  it('should work when yielding at the end of the stack with yield*', function() {
     var stack = [];
 
-    stack.push(function *(next){
+    stack.push(function *(ctx, next){
       yield next;
     });
 
-    co(compose(stack))(done);
+    compose(stack.map(co.wrap))({});
   })
 
-  it('should work when yielding at the end of the stack with yield*', function(done) {
-    var stack = [];
-
-    stack.push(function *(next){
-      yield* next;
-    });
-
-    co(compose(stack))(done);
-  })
-
-  it('should keep the context', function(done){
+  it('should keep the context', function(){
     var ctx = {};
 
     var stack = [];
 
-    stack.push(function *(next){
-      yield next
-      this.should.equal(ctx);
+    stack.push(function *(ctx2, next){
+      yield next();
+      ctx2.should.equal(ctx);
     })
 
-    stack.push(function *(next){
-      yield next
-      this.should.equal(ctx);
+    stack.push(function *(ctx2, next){
+      yield next()
+      ctx2.should.equal(ctx);
     })
 
-    stack.push(function *(next){
-      yield next
-      this.should.equal(ctx);
+    stack.push(function *(ctx2, next){
+      yield next()
+      ctx2.should.equal(ctx);
     })
 
-    co(compose(stack)).call(ctx, done);
+    return compose(stack.map(co.wrap))(ctx);
   })
 
-  it('should catch downstream errors', function(done){
+  it('should catch downstream errors', function(){
     var arr = [];
     var stack = [];
 
-    stack.push(function *(next){
+    stack.push(function *(ctx, next){
       arr.push(1);
       try {
         arr.push(6);
-        yield next;
+        yield next();
         arr.push(7);
       } catch (err) {
         arr.push(2);
@@ -138,17 +109,14 @@ describe('Koa Compose', function(){
       arr.push(3);
     })
 
-    stack.push(function *(next){
+    stack.push(function *(ctx, next){
       arr.push(4);
       throw new Error();
       arr.push(5);
     })
 
-    co(compose(stack))(function(err){
-      if (err) throw err;
-
+    return compose(stack.map(co.wrap))({}).then(function () {
       arr.should.eql([1, 6, 4, 2, 3]);
-      done();
     })
   })
 })

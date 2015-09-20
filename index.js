@@ -1,3 +1,4 @@
+'use strict'
 
 /**
  * Expose compositor.
@@ -16,16 +17,26 @@ module.exports = compose;
  */
 
 function compose(middleware){
-  return function *(next){
-    if (!next) next = noop();
+  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+  for (const fn of middleware) {
+    if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+  }
 
-    var i = middleware.length;
+  /**
+   * @param {Object} context
+   * @return {Promise}
+   * @api public
+   */
 
-    while (i--) {
-      next = middleware[i].call(this, next);
+  return function (context) {
+    return dispatch(0)
+    function dispatch(i) {
+      const fn = middleware[i]
+      if (!fn) return Promise.resolve()
+      return Promise.resolve(fn(context, function next() {
+        return dispatch(i + 1)
+      }))
     }
-
-    yield *next;
   }
 }
 
@@ -35,4 +46,4 @@ function compose(middleware){
  * @api private
  */
 
-function *noop(){}
+function noop(){}

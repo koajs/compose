@@ -13,9 +13,9 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "co": "^4.6.0",
     "istanbul-harmony": "0",
-    "co": "3",
-    "mocha": "1",
+    "mocha": "2",
     "should": "2"
   },
   "scripts": {
