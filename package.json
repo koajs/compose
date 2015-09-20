@@ -16,8 +16,7 @@
     "istanbul-harmony": "0",
     "co": "3",
     "mocha": "1",
-    "should": "2",
-    "koa": "0"
+    "should": "2"
   },
   "scripts": {
     "test": "mocha --harmony --require should --reporter spec",
