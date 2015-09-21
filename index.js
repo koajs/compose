@@ -28,10 +28,10 @@ function compose(middleware){
    * @api public
    */
 
-  return function (context) {
+  return function (context, next) {
     return dispatch(0)
     function dispatch(i) {
-      const fn = middleware[i]
+      const fn = middleware[i] || next
       if (!fn) return Promise.resolve()
       try {
         return Promise.resolve(fn(context, function next() {

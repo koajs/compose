@@ -119,4 +119,14 @@ describe('Koa Compose', function(){
       arr.should.eql([1, 6, 4, 2, 3]);
     })
   })
+
+  it('should compose w/ next', function() {
+    var called = false;
+
+    return compose([])({}, co.wrap(function* () {
+      called = true
+    })).then(function () {
+      assert(called)
+    })
+  })
 })
