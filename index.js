@@ -33,21 +33,9 @@ function compose(middleware){
     function dispatch(i) {
       const fn = middleware[i] || next
       if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next() {
-          return dispatch(i + 1)
-        }))
-      } catch (err) {
-        return Promise.reject(err)
-      }
+      return Promise.resolve(fn(context, function next() {
+        return dispatch(i + 1)
+      }))
     }
   }
 }
-
-/**
- * Noop.
- *
- * @api private
- */
-
-function noop(){}
