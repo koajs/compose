@@ -42,8 +42,28 @@ describe('Koa Compose', function(){
     })
   })
 
+  it('should only accept an array', function () {
+    var err;
+    try {
+      (compose()).should.throw();
+    } catch(e) {
+      err = e;
+    }
+    return (err).should.be.instanceof(TypeError);
+  })
+
   it('should work with 0 middleware', function(){
     return compose([])({});
+  })
+
+  it('should only accept middleware as functions', function(){
+    var err;
+    try {
+      (compose([{}])).should.throw();
+    } catch(e) {
+      err = e;
+    }
+    return (err).should.be.instanceof(TypeError);
   })
 
   it('should work when yielding at the end of the stack', function() {
@@ -58,6 +78,20 @@ describe('Koa Compose', function(){
     return compose(stack.map(co.wrap))({}).then(function () {
       assert(called)
     });
+  })
+
+  it('should reject on errors in middleware', function(){
+    var stack = [];
+
+    stack.push(function *(){throw new Error});
+
+    return compose(stack.map(co.wrap))({})
+        .then(function () {
+          throw 'promise was not rejected'
+        })
+        .catch(function (e) {
+          e.should.be.instanceof(Error)
+        });
   })
 
   it('should work when yielding at the end of the stack with yield*', function() {
