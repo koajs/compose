@@ -11,10 +11,13 @@
   "files": [
     "index.js"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "composition": "^2.1.2"
+  },
   "devDependencies": {
+    "co": "^4.5.4",
     "istanbul-harmony": "0",
-    "co": "3",
+    "koa": "0",
     "mocha": "1",
     "should": "2"
   },
