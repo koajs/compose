@@ -163,4 +163,20 @@ describe('Koa Compose', function(){
       assert(called)
     })
   })
+
+  it('should handle errors in wrapped non-async functions', function () {
+    var arr = [];
+    var stack = [];
+
+    stack.push(function () {
+      throw new Error();
+    })
+
+    return compose(stack.map(co.wrap))({}).then(function () {
+      throw 'promise was not rejected'
+    })
+    .catch(function (e) {
+      e.should.be.instanceof(Error)
+    })
+  })
 })
