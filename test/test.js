@@ -174,9 +174,18 @@ describe('Koa Compose', function(){
 
     return compose(stack.map(co.wrap))({}).then(function () {
       throw 'promise was not rejected'
-    })
-    .catch(function (e) {
+    }).catch(function (e) {
       e.should.be.instanceof(Error)
     })
+  })
+
+  it('should expose next on the context', function () {
+    var stack = [];
+
+    stack.push(function (context, next) {
+      context.next.should.equal(next)
+    })
+
+    return compose(stack.map(co.wrap))({})
   })
 })

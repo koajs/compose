@@ -6,6 +6,45 @@
 
 module.exports = compose;
 
+function noop () {
+  return Promise.resolve()
+}
+
+/**
+ * Try catch middlware invocation
+ * @api private
+ * @param fn
+ * @param ctx
+ * @param next
+ * @returns {Promise<any>}
+ */
+
+function tryCatch(fn, ctx, next) {
+  try {
+    return Promise.resolve(fn(ctx, next))
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+
+
+/**
+ * Reducer for creating storing next reference
+ * @api private
+ * @param next
+ * @param mw
+ * @returns {Function}
+ */
+
+function middlewareReducer(next, mw) {
+  return function(ctx, nextFn) {
+    ctx.next = next && function () { return next(ctx) }
+      || nextFn
+      || noop
+    return tryCatch(mw, ctx, ctx.next)
+  }
+}
+
 /**
  * Compose `middleware` returning
  * a fully valid middleware comprised
@@ -21,25 +60,10 @@ function compose(middleware){
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
-
-  /**
-   * @param {Object} context
-   * @return {Promise}
-   * @api public
-   */
-
-  return function (context, next) {
-    return dispatch(0)
-    function dispatch(i) {
-      const fn = middleware[i] || next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next() {
-          return dispatch(i + 1)
-        }))
-      } catch(err) {
-        return Promise.reject(err);
-      }
+  if (!middleware.length) {
+    return function(ctx, next) {
+      return tryCatch(next || noop, ctx, noop)
     }
   }
+  return middleware.reduceRight(middlewareReducer, undefined)
 }
