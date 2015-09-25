@@ -179,4 +179,26 @@ describe('Koa Compose', function(){
       e.should.be.instanceof(Error)
     })
   })
+
+  // https://github.com/koajs/compose/pull/27#issuecomment-143109739
+  it('should compose w/ other compositions', function() {
+    var called = [];
+
+    return compose([
+        compose([
+            (ctx, next) => {
+                called.push(1)
+                return next()
+            },
+            (ctx, next) => {
+                called.push(2)
+                return next()
+            }
+        ]),
+        (ctx, next) => {
+            called.push(3)
+            return next()
+        }
+    ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
+  })
 })
