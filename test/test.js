@@ -217,8 +217,8 @@ describe('Koa Compose', function(){
   it('should throw if next() is called multiple times #2', function() {
     return compose([
       co.wrap(function* (ctx, next) {
-        yield next()
-        yield next()
+        yield ctx.next()
+        yield ctx.next()
       }),
       co.wrap(function* (ctx) {
 
