@@ -179,6 +179,28 @@ describe('Koa Compose', function(){
     })
   })
 
+  it('should return a valid middleware', function () {
+    var val = 0
+    compose([
+      compose([
+        (ctx, next) => {
+          val++
+          return next()
+        },
+        (ctx, next) => {
+          val++
+          return next()
+        }
+      ]),
+      (ctx, next) => {
+        val++
+        return next()
+      }
+    ])({}).then(function () {
+      val.should.equal(3)
+    })
+  })
+
   it('should expose next on the context', function () {
     var stack = [];
 

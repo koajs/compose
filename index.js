@@ -38,7 +38,7 @@ function tryCatch(fn, ctx, next) {
 
 function middlewareReducer(next, mw) {
   return function(ctx, nextFn) {
-    ctx.next = next && function () { return next(ctx) }
+    ctx.next = next && function () { return next(ctx, nextFn) }
       || nextFn
       || noop
     return tryCatch(mw, ctx, ctx.next)
