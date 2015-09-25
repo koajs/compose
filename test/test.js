@@ -174,8 +174,7 @@ describe('Koa Compose', function(){
 
     return compose(stack.map(co.wrap))({}).then(function () {
       throw 'promise was not rejected'
-    })
-    .catch(function (e) {
+    }).catch(function (e) {
       e.should.be.instanceof(Error)
     })
   })
@@ -208,7 +207,27 @@ describe('Koa Compose', function(){
         yield next()
         yield next()
       })
-    ])({}).then(() => {throw new Error('boom')}, err => {})
+    ])({}).then(() => {
+      throw new Error('boom')
+    }, err => {
+      assert(/multiple times/.test(err.message))
+    })
+  })
+
+  it('should throw if next() is called multiple times #2', function() {
+    return compose([
+      co.wrap(function* (ctx, next) {
+        yield next()
+        yield next()
+      }),
+      co.wrap(function* (ctx) {
+
+      })
+    ])({}).then(() => {
+      throw new Error('boom')
+    }, err => {
+      assert(/multiple times/.test(err.message))
+    })
   })
 
   it('should support ctx.next().then()', function(){
@@ -238,5 +257,37 @@ describe('Koa Compose', function(){
     return compose(stack.map(co.wrap))({}).then(function () {
       arr.should.eql([1, 2, 3, 4, 5, 6, 7, 8]);
     })
+  })
+
+  it('should return a valid middleware', function () {
+    var val = 0
+    compose([
+      compose([
+        (ctx, next) => {
+          val++
+          return next()
+        },
+        (ctx, next) => {
+          val++
+          return next()
+        }
+      ]),
+      (ctx, next) => {
+        val++
+        return next()
+      }
+    ])({}).then(function () {
+      val.should.equal(3)
+    })
+  })
+
+  it('should expose next on the context', function () {
+    var stack = [];
+
+    stack.push(function (context, next) {
+      context.next.should.equal(next)
+    })
+
+    return compose(stack.map(co.wrap))({})
   })
 })
