@@ -201,4 +201,13 @@ describe('Koa Compose', function(){
         }
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
+
+  it('should throw if next() is called multiple times', function() {
+    return compose([
+      co.wrap(function* (ctx, next) {
+        yield next()
+        yield next()
+      })
+    ])({}).then(() => {throw new Error('boom')}, err => {})
+  })
 })
