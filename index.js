@@ -33,7 +33,7 @@ function compose(middleware){
     let index = -1
     return dispatch(0)
     function dispatch(i) {
-      if (i <= index) throw new Error('next() called multiple times')
+      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
       const fn = middleware[i] || next
       if (!fn) return Promise.resolve()
