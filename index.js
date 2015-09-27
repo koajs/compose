@@ -38,11 +38,9 @@ function compose(middleware){
       const fn = middleware[i] || next
       if (!fn) return Promise.resolve()
       try {
-        context.next = next
-        return Promise.resolve(fn(context, next))
-        function next() {
+        return Promise.resolve(fn(context, function next() {
           return dispatch(i + 1)
-        }
+        }))
       } catch(err) {
         return Promise.reject(err);
       }
