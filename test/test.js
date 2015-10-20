@@ -1,3 +1,6 @@
+
+'use strict';
+
 var co = require('co');
 var compose = require('..');
 
