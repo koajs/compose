@@ -13,8 +13,8 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "istanbul-harmony": "0",
     "co": "3",
+    "istanbul": "0",
     "mocha": "1",
     "should": "2"
   },
