@@ -1,5 +1,6 @@
 
 3.0.0 / 2015-10-19
+==================
 
  * change middleware signature to `async (ctx, next) => await next()` for `koa@2`.
    See https://github.com/koajs/compose/pull/27 for more information.
