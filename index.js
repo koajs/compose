@@ -25,7 +25,7 @@ function compose(middleware){
       next = middleware[i].call(this, next);
     }
 
-    yield *next;
+    return yield *next;
   }
 }
 
