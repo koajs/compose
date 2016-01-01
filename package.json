@@ -13,10 +13,10 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "co": "3",
+    "co": "4.6.0",
     "istanbul": "0",
-    "mocha": "1",
-    "should": "2"
+    "mocha": "2.3.4",
+    "should": "8.0.2"
   },
   "scripts": {
     "test": "mocha --harmony --require should --reporter spec",
