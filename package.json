@@ -16,7 +16,7 @@
     "co": "3",
     "istanbul": "0",
     "mocha": "1",
-    "should": "2"
+    "should": "8.2.0"
   },
   "scripts": {
     "test": "mocha --harmony --require should --reporter spec",
