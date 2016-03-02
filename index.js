@@ -37,13 +37,9 @@ function compose(middleware){
       index = i
       const fn = middleware[i] || next
       if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next() {
-          return dispatch(i + 1)
-        }))
-      } catch(err) {
-        return Promise.reject(err)
-      }
+      return new Promise(resolve => resolve(fn(context, function next() {
+        return dispatch(i + 1)
+      })))
     }
   }
 }
