@@ -3,5 +3,7 @@ node_js:
 - "5"
 sudo: false
 language: node_js
-script: "npm run test-travis"
-after_script: "npm install coveralls@2.10.0 && cat ./coverage/lcov.info | coveralls"
+script:
+  - npm run test-travis
+  - npm run bench
+after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
