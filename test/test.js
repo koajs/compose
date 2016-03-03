@@ -156,7 +156,8 @@ describe('Koa Compose', function(){
     var stack = [];
 
     stack.push(function *(next){
-      yield next;
+      var val = yield next;
+      val.should.equal(2);
       return 1;
     });
     stack.push(function *(next){
