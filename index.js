@@ -7,6 +7,22 @@
 module.exports = compose
 
 /**
+ * Decorator that throws error when function was called multiple times
+ * @param {Function} fn
+ * @return {Function}
+ * @api private
+ */
+function callCounter(fn) {
+  var calls = 0;
+  return () => {
+    if (calls++) {
+      return Promise.reject(new Error('next() called multiple times'));
+    }
+    return fn();
+  }
+}
+
+/**
  * Compose `middleware` returning
  * a fully valid middleware comprised
  * of all those which are passed.
@@ -29,21 +45,10 @@ function compose(middleware){
    */
 
   return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch(i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      const fn = middleware[i] || next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next() {
-          return dispatch(i + 1)
-        }))
-      } catch(err) {
-        return Promise.reject(err)
-      }
-    }
+    next = callCounter(next || () => Promise.resolve());
+    next = middleware.reverse().reduce((next, fn) => callCounter(() => {
+      return Promise.resolve().then(() => fn(context, next));
+    }), next);
+    return next();
   }
 }
