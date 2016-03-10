@@ -235,4 +235,24 @@ describe('Koa Compose', function(){
       val.should.equal(3)
     })
   })
+
+  it('should return last return value', function () {
+    var stack = [];
+
+    stack.push(function *(context, next) {
+      var val = yield next();
+      val.should.equal(2);
+      return 1;
+    })
+
+    stack.push(function *(context, next) {
+      var val = yield next();
+      val.should.equal(0);
+      return 2;
+    })
+    var next = () => 0;
+    return compose(stack.map(co.wrap))({}, next).then(function (val) {
+      val.should.equal(1);
+    })
+  })
 })
