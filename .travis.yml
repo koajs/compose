@@ -4,6 +4,7 @@ node_js:
 sudo: false
 language: node_js
 script:
+  - npm run lint
   - npm run test-travis
   - npm run bench
 after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
