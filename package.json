@@ -2,7 +2,7 @@
   "name": "koa-compose",
   "description": "compose Koa middleware",
   "repository": "koajs/compose",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "keywords": [
     "koa",
     "middleware",
@@ -28,6 +28,9 @@
     "test": "mocha --require should --reporter spec",
     "test-cov": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
     "test-travis": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+  },
+  "publishConfig": {
+    "tag": "next"
   },
   "license": "MIT"
 }

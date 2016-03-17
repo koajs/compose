@@ -1,4 +1,10 @@
 
+3.1.0 / 2016-03-17
+==================
+
+ * add linting w/ standard
+ * use `any-promise` so that the promise engine is configurable
+
 3.0.0 / 2015-10-19
 ==================
 
