@@ -11,7 +11,9 @@
   "files": [
     "index.js"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "any-promise": "^1.1.0"
+  },
   "devDependencies": {
     "co": "^4.6.0",
     "istanbul": "^0.4.2",
