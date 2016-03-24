@@ -22,6 +22,10 @@ $ npm install koa-compose
 
   Compose the given middleware and return middleware.
 
+### compose([a, b, c, ...], wrapper)
+
+  Compose the given middleware, wrap all in given wrapper, and return middleware.
+
 ## License
 
   MIT
