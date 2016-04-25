@@ -39,8 +39,9 @@ function compose (middleware) {
       index = i
       let fn = middleware[i] || next
       if (!fn) return Promise.resolve()
-      if (fn._wrapper && Array.isArray(fn._wrapper) && fn._wrapper.length)
+      if (fn._wrapper && Array.isArray(fn._wrapper) && fn._wrapper.length) {
         fn = fn._wrappers.foreach((wrapper) => { fn = wrapper(fn) })
+      }
       try {
         return Promise.resolve(fn(context, function next () {
           return dispatch(i + 1)
