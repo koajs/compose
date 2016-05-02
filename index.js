@@ -37,11 +37,8 @@ function compose (middleware) {
     function dispatch (i) {
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
-      let fn = middleware[i] || next
+      const fn = wrap(middleware[i]) || next
       if (!fn) return Promise.resolve()
-      if (fn._wrappers && Array.isArray(fn._wrappers) && fn._wrappers.length) {
-        fn = fn._wrappers.foreach((wrapper) => { fn = wrapper(fn) })
-      }
       try {
         return Promise.resolve(fn(context, function next () {
           return dispatch(i + 1)
@@ -51,4 +48,22 @@ function compose (middleware) {
       }
     }
   }
+}
+
+/**
+ * composes a wrapped middleware using middleware._wrappers
+ *
+ * @param {Function} middleware
+ * @return {Function} composed
+ * @api public
+ */
+
+function wrap (middleware) {
+  if (!middleware) return false
+  if (!middleware._wrappers) return middleware
+  if (!Array.isArray(middleware._wrappers)) throw new TypeError('._wrappers must be an array')
+  if (!middleware._wrappers.length) return middleware
+  const wrappers = middleware._wrappers
+  delete middleware._wrappers
+  return compose([...wrappers, middleware])
 }
