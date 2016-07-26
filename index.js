@@ -67,10 +67,11 @@ function compose (middleware) {
    */
 
   return function (context, next) {
-    return new Promise((resolve, reject) => {
+    try {
       let value = iter.next(context, next).value
-      if (value && value.then) value.then(resolve).catch(reject)
-      else resolve(value)
-    })
+      return Promise.resolve(value)
+    } catch (err) {
+      return Promise.reject(err)
+    }
   }
 }
