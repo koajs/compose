@@ -47,7 +47,7 @@ function compose (middleware) {
         if (done) {
           value = nextFunc ? nextFunc() : void 0
         } else {
-          value = fn.call(this, context, this.next.bind(this))
+          value = fn(context, this.next.bind(this))
         }
 
         return {
