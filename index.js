@@ -30,6 +30,7 @@ function compose (middleware) {
 
   middleware[Symbol.iterator] = function () {
     const self = this
+    const length = self.length
     let i = 0
     let context
     let nextFunc
@@ -40,7 +41,7 @@ function compose (middleware) {
         if (!nextFunc) nextFunc = n
 
         let fn = self[i++]
-        let done = i > self.length
+        let done = i > length
         let value
 
         if (done) {
