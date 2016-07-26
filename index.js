@@ -25,39 +25,46 @@ function compose (middleware) {
   }
 
   /**
-   * @param {Object} context
-   * @return {Promise}
-   * @api public
+   * Make an iterator for middleware.
    */
 
   middleware[Symbol.iterator] = function () {
-    let self = this
+    const self = this
     let i = 0
-    let c
-    let n
-    return {
-      next (_c, _n) {
-        if (!c) c = _c
-        if (!n) n = _n
-        let fn = self[i++]
-        let ended = i > self.length
-        let result = void 0
+    let context
+    let nextFunc
 
-        if (!ended) {
-          result = fn.call(this, c, this.next.bind(this))
+    return {
+      next (c, n) {
+        if (!context) context = c
+        if (!nextFunc) nextFunc = n
+
+        let fn = self[i++]
+        let done = i > self.length
+        let value
+
+        if (done) {
+          value = nextFunc ? nextFunc() : void 0
         } else {
-          result = n ? n() : void 0
+          value = fn.call(this, context, this.next.bind(this))
         }
 
         return {
-          value: result,
-          done: ended
+          value,
+          done
         }
       }
     }
   }
 
-  let iter = middleware[Symbol.iterator]()
+  // Alternative iteration.
+  const iter = middleware[Symbol.iterator]()
+
+  /**
+   * @param {Object} context
+   * @return {Promise}
+   * @api public
+   */
 
   return function (context, next) {
     return new Promise((resolve, reject) => {
