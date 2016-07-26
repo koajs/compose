@@ -202,8 +202,7 @@ describe('Koa Compose', function () {
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
 
-  /*
-  it('should throw if next() is called multiple times', function () {
+  it.skip('should throw if next() is called multiple times', function () {
     return compose([
       co.wrap(function * (ctx, next) {
         yield next()
@@ -215,7 +214,6 @@ describe('Koa Compose', function () {
       assert(/multiple times/.test(err.message))
     })
   })
-  */
 
   it('should return a valid middleware', function () {
     var val = 0
@@ -239,8 +237,7 @@ describe('Koa Compose', function () {
     })
   })
 
-  /*
-  it('should return last return value', function () {
+  it.skip('should return last return value', function () {
     var stack = []
 
     stack.push(function * (context, next) {
@@ -259,5 +256,4 @@ describe('Koa Compose', function () {
       val.should.equal(1)
     })
   })
-  */
 })
