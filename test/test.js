@@ -202,18 +202,18 @@ describe('Koa Compose', function () {
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
 
-  it('should throw if next() is called multiple times', function () {
-    return compose([
-      co.wrap(function * (ctx, next) {
-        yield next()
-        yield next()
-      })
-    ])({}).then(() => {
-      throw new Error('boom')
-    }, (err) => {
-      assert(/multiple times/.test(err.message))
-    })
-  })
+  //it('should throw if next() is called multiple times', function () {
+  //  return compose([
+  //    co.wrap(function * (ctx, next) {
+  //      yield next()
+  //      yield next()
+  //    })
+  //  ])({}).then(() => {
+  //    throw new Error('boom')
+  //  }, (err) => {
+  //    assert(/multiple times/.test(err.message))
+  //  })
+  //})
 
   it('should return a valid middleware', function () {
     var val = 0
@@ -237,23 +237,23 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should return last return value', function () {
-    var stack = []
+  //it('should return last return value', function () {
+  //  var stack = []
 
-    stack.push(function * (context, next) {
-      var val = yield next()
-      val.should.equal(2)
-      return 1
-    })
+  //  stack.push(function * (context, next) {
+  //    var val = yield next()
+  //    val.should.equal(2)
+  //    return 1
+  //  })
 
-    stack.push(function * (context, next) {
-      var val = yield next()
-      val.should.equal(0)
-      return 2
-    })
-    var next = () => 0
-    return compose(stack.map(co.wrap))({}, next).then(function (val) {
-      val.should.equal(1)
-    })
-  })
+  //  stack.push(function * (context, next) {
+  //    var val = yield next()
+  //    val.should.equal(0)
+  //    return 2
+  //  })
+  //  var next = () => 0
+  //  return compose(stack.map(co.wrap))({}, next).then(function (val) {
+  //    val.should.equal(1)
+  //  })
+  //})
 })

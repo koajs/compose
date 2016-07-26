@@ -30,22 +30,40 @@ function compose (middleware) {
    * @api public
    */
 
-  return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      const fn = middleware[i] || next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next () {
-          return dispatch(i + 1)
-        }))
-      } catch (err) {
-        return Promise.reject(err)
+  middleware[Symbol.iterator] = function () {
+    let self = this
+    let i = 0
+    let c
+    let n
+    return {
+      next (_c, _n) {
+        if (!c) c = _c
+        if (!n) n = _n
+        let fn = self[i++]
+        let ended = i > self.length
+        let result = void 0
+
+        if (!ended) {
+          result = fn.call(this, c, this.next.bind(this))
+        } else {
+          result = n ? n() : void 0
+        }
+
+        return {
+          value: result,
+          done: ended
+        }
       }
     }
+  }
+
+  let iter = middleware[Symbol.iterator]()
+
+  return function (context, next) {
+    return new Promise((resolve, reject) => {
+      let value = iter.next(context, next).value
+      if (value && value.then) value.then(resolve).catch(reject)
+      else resolve(value)
+    })
   }
 }
