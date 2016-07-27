@@ -42,7 +42,7 @@ function compose (middleware) {
 
         let fn = self[i++] || nextFunc
         let done = i > length
-        let value = void 0
+        let value
         let nextCalled = false
 
         if (fn) {
