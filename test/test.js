@@ -237,18 +237,19 @@ describe('Koa Compose', function () {
     })
   })
 
-  it.skip('should return last return value', function () {
+  it('should return last return value', function () {
     var stack = []
 
     stack.push(function * (context, next) {
       var val = yield next()
-      val.should.equal(2)
+      val.value.should.equal(2)
       return 1
+      return yield next()
     })
 
     stack.push(function * (context, next) {
       var val = yield next()
-      val.should.equal(0)
+      val.value.should.equal(0)
       return 2
     })
     var next = () => 0
