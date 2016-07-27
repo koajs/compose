@@ -244,7 +244,6 @@ describe('Koa Compose', function () {
       var val = yield next()
       val.value.should.equal(2)
       return 1
-      return yield next()
     })
 
     stack.push(function * (context, next) {
