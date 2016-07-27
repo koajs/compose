@@ -256,4 +256,24 @@ describe('Koa Compose', function () {
       val.should.equal(1)
     })
   })
+
+  it('should accept any onUsed object', function () {
+    var composed = compose([(ctx, next) => next()])
+    composed.onUsed({})
+    return composed({})
+  })
+
+  it('should prepare the middleware', function () {
+    var mw = (ctx) => { ctx.body = 'body' }
+    var composed = compose([mw])
+    var useContext = {
+      app: {},
+      useChain: [],
+      prepareMiddleware: function (toPrepare) {
+        assert.equal(toPrepare, mw)
+      }
+    }
+    composed.onUsed(useContext)
+    return composed({}, () => {})
+  })
 })
