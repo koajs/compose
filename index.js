@@ -42,12 +42,17 @@ function compose (middleware) {
 
         let fn = self[i++] || nextFunc
         let done = i > length
-        let value
+        let value = void 0
+        let nextCalled = false
 
-        if (done) {
-          value = fn ? fn(context) : void 0
-        } else {
-          value = fn(context, this.next.bind(this))
+        if (fn) {
+          value = fn(context, () => {
+            if (nextCalled) {
+              return Promise.reject(new Error('next() called multiple times'))
+            }
+            nextCalled = true
+            return Promise.resolve(this.next().value)
+          })
         }
 
         return {

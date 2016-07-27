@@ -202,7 +202,7 @@ describe('Koa Compose', function () {
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
 
-  it.skip('should throw if next() is called multiple times', function () {
+  it('should throw if next() is called multiple times', function () {
     return compose([
       co.wrap(function * (ctx, next) {
         yield next()
@@ -242,13 +242,13 @@ describe('Koa Compose', function () {
 
     stack.push(function * (context, next) {
       var val = yield next()
-      val.value.should.equal(2)
+      val.should.equal(2)
       return 1
     })
 
     stack.push(function * (context, next) {
       var val = yield next()
-      val.value.should.equal(0)
+      val.should.equal(0)
       return 2
     })
     var next = () => 0
