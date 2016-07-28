@@ -25,27 +25,59 @@ function compose (middleware) {
   }
 
   /**
+   * Make an iterator for middleware.
+   */
+
+  const obj = {
+    [Symbol.iterator]: () => {
+      const { length } = middleware
+      let i = 0
+      let context
+      let nextFunc
+
+      return {
+        next (c, n) {
+          if (!context) context = c
+          if (!nextFunc) nextFunc = n
+
+          let fn = middleware[i++] || nextFunc
+          let done = i > length
+          let value
+          let nextCalled = false
+
+          if (fn) {
+            value = fn(context, () => {
+              if (nextCalled) {
+                return Promise.reject(new Error('next() called multiple times'))
+              }
+              nextCalled = true
+              return Promise.resolve().then(() => this.next().value)
+            })
+          }
+
+          return {
+            value,
+            done
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * @param {Object} context
    * @return {Promise}
    * @api public
    */
 
   return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      const fn = middleware[i] || next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next () {
-          return dispatch(i + 1)
-        }))
-      } catch (err) {
-        return Promise.reject(err)
-      }
+    // iteration object
+    const iter = obj[Symbol.iterator]()
+
+    try {
+      return Promise.resolve(iter.next(context, next).value)
+    } catch (err) {
+      return Promise.reject(err)
     }
   }
 }
