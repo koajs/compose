@@ -17,10 +17,10 @@
   "devDependencies": {
     "co": "^4.6.0",
     "istanbul": "^0.4.2",
-    "matcha": "^0.6.1",
+    "matcha": "^0.7.0",
     "mocha": "^2.4.5",
     "should": "^2.0.0",
-    "standard": "^6.0.8"
+    "standard": "^7.0.0"
   },
   "scripts": {
     "bench": "matcha bench/bench.js",
