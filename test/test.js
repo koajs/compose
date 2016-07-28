@@ -44,6 +44,47 @@ describe('Koa Compose', function () {
     })
   })
 
+  it('should be able to be called twice', () => {
+    var stack = []
+
+    stack.push(function * (context, next) {
+      context.arr.push(1)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      context.arr.push(6)
+    })
+
+    stack.push(function * (context, next) {
+      context.arr.push(2)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      context.arr.push(5)
+    })
+
+    stack.push(function * (context, next) {
+      context.arr.push(3)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      context.arr.push(4)
+    })
+
+    const fn = compose(stack.map((fn) => co.wrap(fn)))
+    const ctx1 = { arr: [] }
+    const ctx2 = { arr: [] }
+    const out = [1, 2, 3, 4, 5, 6]
+
+    return fn(ctx1).then(() => {
+      assert.deepEqual(out, ctx1.arr);
+
+      return fn(ctx2);
+    }).then(() => {
+      assert.deepEqual(out, ctx2.arr);
+    })
+  })
+
   it('should only accept an array', function () {
     var err
     try {
