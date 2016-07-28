@@ -77,11 +77,11 @@ describe('Koa Compose', function () {
     const out = [1, 2, 3, 4, 5, 6]
 
     return fn(ctx1).then(() => {
-      assert.deepEqual(out, ctx1.arr);
+      assert.deepEqual(out, ctx1.arr)
 
-      return fn(ctx2);
+      return fn(ctx2)
     }).then(() => {
-      assert.deepEqual(out, ctx2.arr);
+      assert.deepEqual(out, ctx2.arr)
     })
   })
 
@@ -296,5 +296,23 @@ describe('Koa Compose', function () {
     return compose(stack.map(co.wrap))({}, next).then(function (val) {
       val.should.equal(1)
     })
+  })
+
+  it('should not affect the original middleware array', () => {
+    const middleware = []
+    const fn1 = (ctx, next) => {
+      return next()
+    }
+    middleware.push(fn1)
+
+    for (const fn of middleware) {
+      assert.equal(fn, fn1)
+    }
+
+    compose(middleware)
+
+    for (const fn of middleware) {
+      assert.equal(fn, fn1)
+    }
   })
 })
