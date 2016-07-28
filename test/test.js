@@ -256,4 +256,22 @@ describe('Koa Compose', function () {
       val.should.equal(1)
     })
   })
+
+  it('should not affect the middleware', () => {
+    const middleware = [];
+    const fn1 = (ctx, next) => {
+      return next();
+    }
+    middleware.push(fn1);
+
+    for (const fn of middleware) {
+      assert.equal(fn, fn1);
+    }
+
+    const composition = compose(middleware);
+
+    for (const fn of middleware) {
+      assert.equal(fn, fn1);
+    }
+  })
 })
