@@ -37,7 +37,8 @@ function compose (middleware) {
     function dispatch (i) {
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
-      const fn = middleware[i] || next
+      let fn = middleware[i]
+      if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {
         return Promise.resolve(fn(context, function next () {
