@@ -9,7 +9,8 @@ const Promise = require('any-promise')
 const iterable = Object.create({
   [Symbol.iterator] (middleware, length, context, nextFunc) {
     return {
-      next (i = 0) {
+      next (i) {
+        i |= 0
         const fn = middleware[i] || nextFunc
         let called = false
 
