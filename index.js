@@ -19,16 +19,15 @@ module.exports = compose
  */
 
 function compose (middleware) {
-  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+  const composer = new Composer()
 
-  const composer = new Composer(null)
-  let nextComposer = composer
+  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
-    nextComposer = nextComposer.addNext(fn)
+    composer.push(fn)
   }
-  // a placehold composer for lastFn
-  nextComposer.addNext(null)
+  // a placehold for lastFn
+  composer.push(null)
 
   /**
    * @param {Object} context
@@ -37,37 +36,28 @@ function compose (middleware) {
    * @api public
    */
   return function (context, lastFn) {
-    return composer.nextFn(context, lastFn || null)()
+    try {
+      return Promise.resolve(composer.runNext(0, context, lastFn))
+    } catch (err) {
+      return Promise.reject(err)
+    }
   }
 }
 
-class Composer {
-  constructor (fn) {
-    this.fn = fn
-    this.next = null
-  }
-
-  addNext (fn) {
-    this.next = new Composer(fn)
-    return this.next
-  }
-
-  nextFn (context, lastFn) {
+class Composer extends Array {
+  runNext (index, context, lastFn) {
+    let ctx = this
     let called = false
-    let composer = this.next
+    if (index >= this.length) return
 
-    return function next () {
-      if (called) return Promise.reject(new Error('next() called multiple times'))
+    // if this[index] not exists, it is the placehold for lastFn
+    let fn = this[index] || lastFn
+    // should keep function name "next"
+    return fn && fn(context, function next () {
+      if (called) throw new Error('next() called multiple times')
       called = true
-      if (!composer) return Promise.resolve()
-      // if composer.fn not exists, it is the placehold composer
-      let fn = composer.fn || lastFn
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, composer.nextFn(context, lastFn)))
-      } catch (err) {
-        return Promise.reject(err)
-      }
-    }
+
+      return Promise.resolve(ctx.runNext(index + 1, context, lastFn))
+    })
   }
 }
