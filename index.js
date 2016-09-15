@@ -28,7 +28,6 @@ const iterable = Object.create({
   }
 })
 
-
 /**
  * Expose compositor.
  */
