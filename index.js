@@ -3,6 +3,33 @@
 const Promise = require('any-promise')
 
 /**
+ * Make an iterator for middleware.
+ */
+
+const iterable = Object.create({
+  [Symbol.iterator] (middleware, length, context, nextFunc) {
+    return {
+      next (i) {
+        i |= 0
+        const fn = middleware[i] || nextFunc
+        let called = false
+
+        return {
+          done: i === length,
+          value: fn && fn(context, () => {
+            if (called) {
+              throw new Error('next() called multiple times')
+            }
+            called = true
+            return Promise.resolve().then(() => this.next(i + 1).value)
+          })
+        }
+      }
+    }
+  }
+})
+
+/**
  * Expose compositor.
  */
 
@@ -31,21 +58,13 @@ function compose (middleware) {
    */
 
   return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      const fn = middleware[i] || next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next () {
-          return dispatch(i + 1)
-        }))
-      } catch (err) {
-        return Promise.reject(err)
-      }
+    // iterator
+    const iter = iterable[Symbol.iterator](middleware, middleware.length, context, next)
+
+    try {
+      return Promise.resolve(iter.next().value)
+    } catch (err) {
+      return Promise.reject(err)
     }
   }
 }

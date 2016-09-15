@@ -13,7 +13,7 @@ suite('compose', () => {
     return logic().then(next).then(logic)
   }
 
-  for (let exp = 0; exp <= 10; exp++) {
+  for (let exp = 0; exp <= 13; exp++) {
     const count = Math.pow(2, exp)
     const arr = []
     for (let i = 0; i < count; i++) {
