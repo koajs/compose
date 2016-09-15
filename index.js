@@ -2,8 +2,32 @@
 
 const Promise = require('any-promise')
 
-// Shorthand for Symbol.iterator
-const SYMBOL_ITERATOR = Symbol.iterator
+/**
+ * Make an iterator for middleware.
+ */
+
+const iterable = Object.create({
+  [Symbol.iterator] (middleware, length, context, nextFunc) {
+    return {
+      next (i = 0) {
+        const fn = middleware[i] || nextFunc
+        let called = false
+
+        return {
+          done: i === length,
+          value: fn && fn(context, () => {
+            if (called) {
+              throw new Error('next() called multiple times')
+            }
+            called = true
+            return Promise.resolve().then(() => this.next(i + 1).value)
+          })
+        }
+      }
+    }
+  }
+})
+
 
 /**
  * Expose compositor.
@@ -28,43 +52,14 @@ function compose (middleware) {
   }
 
   /**
-   * Make an iterator for middleware.
-   */
-
-  const obj = {
-    [SYMBOL_ITERATOR] (middleware, context, nextFunc) {
-      const length = middleware.length
-      let i = -1
-
-      return {
-        next () {
-          const fn = middleware[++i] || nextFunc
-          let nextCalled = false
-
-          return {
-            value: fn && fn(context, () => {
-              if (nextCalled) {
-                throw new Error('next() called multiple times')
-              }
-              nextCalled = true
-              return Promise.resolve().then(() => this.next().value)
-            }),
-            done: i === length
-          }
-        }
-      }
-    }
-  }
-
-  /**
    * @param {Object} context
    * @return {Promise}
    * @api public
    */
 
   return function (context, next) {
-    // iteration object
-    const iter = obj[SYMBOL_ITERATOR](middleware, context, next)
+    // iterator
+    const iter = iterable[Symbol.iterator](middleware, middleware.length, context, next)
 
     try {
       return Promise.resolve(iter.next().value)
