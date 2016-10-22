@@ -87,23 +87,14 @@ describe('Koa Compose', function () {
 
   it('should support variadic arguments', function () {
     const arr = []
-    const promise = compose(a, b, c)()
-    promise.then(() => arr.should.eql('a', 'b', 'c'))
+    const gen = str => (ctx, next) => new Promise((resolve, reject) => {
+      arr.push(str)
+      next()
+      resolve()
+    })
 
-    function * a (ctx, next) {
-      arr.push('a')
-      yield next
-    }
-
-    function * b (ctx, next) {
-      arr.push('b')
-      yield next
-    }
-
-    function * c (ctx, next) {
-      arr.push('c')
-      yield next
-    }
+    const promise = compose(gen('a'), gen('b'), gen('c'))({})
+    return promise.then(() => arr.should.eql([ 'a', 'b', 'c' ]))
   })
 
   it('should work with 0 middleware', function () {
