@@ -85,14 +85,25 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should only accept an array', function () {
-    var err
-    try {
-      (compose()).should.throw()
-    } catch (e) {
-      err = e
+  it('should support variadic arguments', function () {
+    const arr = []
+    const promise = compose(a, b, c)()
+    promise.then(() => arr.should.eql('a', 'b', 'c'))
+
+    function * a (ctx, next) {
+      arr.push('a')
+      yield next
     }
-    return (err).should.be.instanceof(TypeError)
+
+    function * b (ctx, next) {
+      arr.push('b')
+      yield next
+    }
+
+    function * c (ctx, next) {
+      arr.push('c')
+      yield next
+    }
   })
 
   it('should work with 0 middleware', function () {
