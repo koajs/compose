@@ -1,15 +1,27 @@
 
 /**
- * Module dependencies.
- */
-
-var flatten = require('lodash/flatten');
-
-/**
  * Expose compositor.
  */
 
 module.exports = compose;
+
+/**
+ * Lazily flattens an array in reverse order
+ *
+ * @param {Array} arr
+ * @return {Iterable<Function>}
+ * @api private
+ */
+function *flatten(arr) {
+  for (var i = arr.length - 1; i >= 0; i--) {
+    var item = arr[i];
+    if (item instanceof Array) {
+      yield* flatten(item);
+    } else {
+      yield item;
+    }
+  }
+}
 
 /**
  * Compose `middleware` returning
@@ -21,15 +33,15 @@ module.exports = compose;
  * @api public
  */
 
-function compose(middleware){
-  middleware = flatten(arguments);
+function compose(){
+  var middleware = flatten(arguments);
   return function *(next){
     if (!next) next = noop();
 
-    var i = middleware.length;
-
-    while (i--) {
-      next = middleware[i].call(this, next);
+    var curr = middleware.next();
+    while (!curr.done) {
+      next = curr.value.call(this, next);
+      curr = middleware.next();
     }
 
     return yield *next;
