@@ -28,9 +28,9 @@ $ npm install koa-compose
 
 [npm-image]: https://img.shields.io/npm/v/koa-compose.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-compose
-[travis-image]: https://img.shields.io/travis/koajs/compose/master.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/koajs/compose/next.svg?style=flat-square
 [travis-url]: https://travis-ci.org/koajs/compose
-[codecov-image]: https://img.shields.io/codecov/c/github/koajs/compose/master.svg?style=flat-square
+[codecov-image]: https://img.shields.io/codecov/c/github/koajs/compose/next.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/koajs/compose
 [david-image]: http://img.shields.io/david/koajs/compose.svg?style=flat-square
 [david-url]: https://david-dm.org/koajs/compose
