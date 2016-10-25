@@ -315,4 +315,22 @@ describe('Koa Compose', function () {
       assert.equal(fn, fn1)
     }
   })
+
+  it('should not enter an infinite loop #60', function () {
+    var ctx = {
+      middleware: 0,
+      next: 0
+    }
+    var middleware = [function (ctx, next) {
+      ctx.middleware++
+      return next()
+    }]
+
+    return compose(middleware)(ctx, function (ctx, next) {
+      ctx.next++
+      return next()
+    }).then(function () {
+      ctx.should.eql({middleware: 1, next: 1})
+    })
+  })
 })
