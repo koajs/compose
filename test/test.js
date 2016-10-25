@@ -315,4 +315,22 @@ describe('Koa Compose', function () {
       assert.equal(fn, fn1)
     }
   })
+
+  it('should not get stuck on the passed in next', () => {
+    const middleware = [(ctx, next) => {
+      ctx.middleware++
+      return next()
+    }]
+    const ctx = {
+      middleware: 0,
+      next: 0
+    }
+
+    return compose(middleware)(ctx, (ctx, next) => {
+      ctx.next++
+      return next()
+    }).then(() => {
+      ctx.should.eql({ middleware: 1, next: 1 })
+    })
+  })
 })
