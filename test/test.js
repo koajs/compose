@@ -198,4 +198,36 @@ describe('Koa Compose', function(){
       yield next
     }
   })
+
+  it('should not cache middleware', function(done) {
+    var arr = [];
+    var stack = [];
+
+    stack.push(function *original(next) {
+      arr.push(0);
+      yield next;
+      arr.push(5);
+    });
+
+    var composed = compose(stack);
+
+    stack[0] = function *replacement(next) {
+      arr.push(1);
+      yield next;
+      arr.push(4);
+    };
+
+    stack.push(function *inserted(next) {
+      arr.push(2);
+      yield next;
+      arr.push(3);
+    });
+
+    co(composed)(function (err) {
+      if (err) throw err;
+
+      arr.should.eql([1, 2, 3, 4]);
+      done();
+    });
+  })
 })

@@ -11,9 +11,7 @@
   "files": [
     "index.js"
   ],
-  "dependencies": {
-    "lodash": "^4.16.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "co": "^3.0.0",
     "istanbul": "^0.4.2",
