@@ -1,4 +1,9 @@
 
+3.2.0 /
+==================
+
+ * fix #60 infinite loop when calling next https://github.com/koajs/compose/pull/61
+
 3.1.0 / 2016-03-17
 ==================
 
