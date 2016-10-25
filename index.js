@@ -1,5 +1,11 @@
 
 /**
+ * Module dependencies.
+ */
+
+var flatten = require('lodash/flatten');
+
+/**
  * Expose compositor.
  */
 
@@ -10,12 +16,13 @@ module.exports = compose;
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {Array} middleware
+ * @param {Array|Function...} middleware
  * @return {Function}
  * @api public
  */
 
 function compose(middleware){
+  middleware = flatten(arguments);
   return function *(next){
     if (!next) next = noop();
 
