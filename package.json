@@ -18,9 +18,9 @@
     "co": "^4.6.0",
     "istanbul": "^0.4.2",
     "matcha": "^0.7.0",
-    "mocha": "^2.4.5",
+    "mocha": "^3.1.2",
     "should": "^2.0.0",
-    "standard": "^7.0.0"
+    "standard": "^8.4.0"
   },
   "scripts": {
     "bench": "matcha bench/bench.js",
