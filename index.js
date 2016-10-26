@@ -1,13 +1,30 @@
 'use strict'
 
 const Promise = require('any-promise')
-const flatten = require('lodash/flatten')
 
 /**
  * Expose compositor.
  */
 
 module.exports = compose
+
+/**
+ * Lazily flattens an array in reverse order
+ *
+ * @param {Array} arr
+ * @return {Iterable<Function>}
+ * @api private
+ */
+function * flatten (arr) {
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i]
+    if (item instanceof Array) {
+      yield* flatten(item)
+    } else {
+      yield item
+    }
+  }
+}
 
 /**
  * Compose `middleware` returning
@@ -19,11 +36,8 @@ module.exports = compose
  * @api public
  */
 
-function compose (middleware) {
-  middleware = flatten(arguments)
-  for (const fn of middleware) {
-    if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
-  }
+function compose () {
+  let args = arguments
 
   /**
    * @param {Object} context
@@ -32,22 +46,27 @@ function compose (middleware) {
    */
 
   return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      let fn = middleware[i]
-      if (i === middleware.length) fn = next
+    const middleware = flatten(args)
+    let done = false
+    function dispatch () {
+      if (done) return Promise.resolve()
+      const curr = middleware.next()
+      done = curr.done
+      const fn = done ? next : curr.value
       if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, function next () {
-          return dispatch(i + 1)
-        }))
-      } catch (err) {
-        return Promise.reject(err)
-      }
+      if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+      return Promise.resolve().then(function () { // for implicit try-catch
+        let nextCalled = false
+        return fn(context, function next () {
+          if (nextCalled) {
+            return Promise.reject(new Error('next() called multiple times'))
+          } else {
+            nextCalled = true
+            return dispatch()
+          }
+        })
+      })
     }
+    return dispatch()
   }
 }

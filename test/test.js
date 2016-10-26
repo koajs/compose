@@ -104,7 +104,7 @@ describe('Koa Compose', function () {
   it('should only accept middleware as functions', function () {
     var err
     try {
-      (compose([{}])).should.throw()
+      (compose([{}]))({}).should.throw()
     } catch (e) {
       err = e
     }
@@ -333,6 +333,32 @@ describe('Koa Compose', function () {
       return next()
     }).then(() => {
       ctx.should.eql({ middleware: 1, next: 1 })
+    })
+  })
+
+  it('should not cache middleware', function() {
+    var arr = []
+    var stack = []
+
+    stack.push(function original(ctx, next) {
+      arr.push(0)
+      return next().then(() => arr.push(5))
+    })
+
+    var composed = compose(stack)
+
+    stack[0] = function replacement(ctx, next) {
+      arr.push(1)
+      return next().then(() => arr.push(4))
+    }
+
+    stack.push(function inserted(ctx, next) {
+      arr.push(2)
+      return next().then(() => arr.push(3))
+    })
+
+    return composed({}).then(function () {
+      arr.should.eql([1, 2, 3, 4])
     })
   })
 })
