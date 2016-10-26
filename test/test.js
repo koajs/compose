@@ -170,32 +170,4 @@ describe('Koa Compose', function(){
       done();
     });
   })
-
-  it('should support variadic arguments', function(done){
-    var arr = []
-
-    co(compose(a, b, c))(function(err){
-      if (err) {
-        return done(err)
-      }
-
-      arr.should.eql([ 'a', 'b', 'c' ])
-      done()
-    })
-
-    function *a(next){
-      arr.push('a')
-      yield next
-    }
-
-    function *b(next){
-      arr.push('b')
-      yield next
-    }
-
-    function *c(next){
-      arr.push('c')
-      yield next
-    }
-  })
 })
