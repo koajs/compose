@@ -1,4 +1,9 @@
 
+3.2.1 / 2016-10-26
+==================
+
+ * revert add variadric support #65 - introduced an unintended breaking change
+
 3.2.0 / 2016-10-25
 ==================
 
