@@ -1,4 +1,9 @@
 
+2.5.1 / 2016-10-26
+==================
+
+ * reverts variadic support #64, an unintended breaking change
+
 2.5.0 / 2016-10-25
 ==================
 
