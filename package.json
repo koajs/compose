@@ -12,8 +12,7 @@
     "index.js"
   ],
   "dependencies": {
-    "any-promise": "^1.1.0",
-    "lodash": "^4.16.4"
+    "any-promise": "^1.1.0"
   },
   "devDependencies": {
     "co": "^4.6.0",

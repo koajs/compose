@@ -1,7 +1,6 @@
 'use strict'
 
 const Promise = require('any-promise')
-const flatten = require('lodash/flatten')
 
 /**
  * Expose compositor.
@@ -14,13 +13,13 @@ module.exports = compose
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {Array|Function...} middleware
+ * @param {Array} middleware
  * @return {Function}
  * @api public
  */
 
 function compose (middleware) {
-  middleware = flatten(arguments)
+  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
