@@ -1,5 +1,5 @@
-var co = require('co');
-var compose = require('..');
+const co = require('co');
+const compose = require('..');
 
 function wait(ms) {
   return function (done) {
@@ -9,8 +9,8 @@ function wait(ms) {
 
 describe('Koa Compose', function(){
   it('should work', function(done){
-    var arr = [];
-    var stack = [];
+    const arr = [];
+    const stack = [];
 
     stack.push(function *(next){
       arr.push(1);
@@ -49,12 +49,12 @@ describe('Koa Compose', function(){
   })
 
   it('should work within a generator', function(done){
-    var arr = [];
+    const arr = [];
 
     co(function *(){
       arr.push(0);
 
-      var stack = [];
+      const stack = [];
 
       stack.push(function* (next){
         arr.push(1);
@@ -80,7 +80,7 @@ describe('Koa Compose', function(){
   })
 
   it('should work when yielding at the end of the stack', function(done) {
-    var stack = [];
+    const stack = [];
 
     stack.push(function *(next){
       yield next;
@@ -90,7 +90,7 @@ describe('Koa Compose', function(){
   })
 
   it('should work when yielding at the end of the stack with yield*', function(done) {
-    var stack = [];
+    const stack = [];
 
     stack.push(function *(next){
       yield* next;
@@ -100,9 +100,9 @@ describe('Koa Compose', function(){
   })
 
   it('should keep the context', function(done){
-    var ctx = {};
+    const ctx = {};
 
-    var stack = [];
+    const stack = [];
 
     stack.push(function *(next){
       yield next
@@ -123,8 +123,8 @@ describe('Koa Compose', function(){
   })
 
   it('should catch downstream errors', function(done){
-    var arr = [];
-    var stack = [];
+    const arr = [];
+    const stack = [];
 
     stack.push(function *(next){
       arr.push(1);
