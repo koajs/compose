@@ -41,9 +41,13 @@ function compose (middleware) {
       if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {
-        return Promise.resolve(fn(context, function next () {
+        const result = fn(context, function next () {
           return dispatch(i + 1)
-        }))
+        })
+        if (typeof result.then === 'function') {
+          return result
+        }
+        throw new TypeError('Middleware must return a Promise');
       } catch (err) {
         return Promise.reject(err)
       }

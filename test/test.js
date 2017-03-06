@@ -278,24 +278,16 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should return last return value', function () {
-    var stack = []
-
-    stack.push(function * (context, next) {
-      var val = yield next()
-      val.should.equal(2)
-      return 1
+  it('should throw if a middleware does not return a promise', function () {
+    var next = () => null
+    return compose([])({}, next)
+    .then(function () {
+      throw new Error('promise was not rejected')
+    })
+    .catch(function (e) {
+      e.should.be.instanceof(Error)
     })
 
-    stack.push(function * (context, next) {
-      var val = yield next()
-      val.should.equal(0)
-      return 2
-    })
-    var next = () => 0
-    return compose(stack.map(co.wrap))({}, next).then(function (val) {
-      val.should.equal(1)
-    })
   })
 
   it('should not affect the original middleware array', () => {
