@@ -111,7 +111,7 @@ describe('Koa Compose', function () {
 
   it('should only accept functions for next', function () {
     var err
-    var next = "Not  null, not a function"
+    var next = 'Not  null, not a function'
     try {
       (compose([])({}, next)).should.throw()
     } catch (e) {
@@ -298,7 +298,6 @@ describe('Koa Compose', function () {
     .catch(function (e) {
       e.should.be.instanceof(Error)
     })
-
   })
 
   it('should not affect the original middleware array', () => {

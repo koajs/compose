@@ -31,7 +31,7 @@ function compose (middleware) {
    */
 
   return function (context, next) {
-    if (next && typeof next !== 'function') {
+    if (next !== undefined && typeof next !== 'function') {
       throw new TypeError('Next must be a function when specified')
     }
     // last called middleware #
@@ -51,9 +51,9 @@ function compose (middleware) {
           return result
         }
         if (result === undefined) {
-          return Promise.resolve();
+          return Promise.resolve()
         }
-        throw new TypeError('Middleware must return a Promise');
+        throw new TypeError('Middleware must return a Promise')
       } catch (err) {
         return Promise.reject(err)
       }
