@@ -44,7 +44,7 @@ function compose (middleware) {
         const result = fn(context, function next () {
           return dispatch(i + 1)
         })
-        if (typeof result.then === 'function') {
+        if (typeof result === 'object' && result !== null && typeof result.then === 'function') {
           return result
         }
         throw new TypeError('Middleware must return a Promise');
