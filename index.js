@@ -50,6 +50,9 @@ function compose (middleware) {
         if (typeof result === 'object' && result !== null && typeof result.then === 'function') {
           return result
         }
+        if (result === undefined) {
+          return Promise.resolve();
+        }
         throw new TypeError('Middleware must return a Promise');
       } catch (err) {
         return Promise.reject(err)
