@@ -109,6 +109,17 @@ describe('Koa Compose', function () {
     return (err).should.be.instanceof(TypeError)
   })
 
+  it('should only accept functions for next', function () {
+    var err
+    var next = "Not  null, not a function"
+    try {
+      (compose([])({}, next)).should.throw()
+    } catch (e) {
+      err = e
+    }
+    return (err).should.be.instanceof(TypeError)
+  })
+
   it('should work when yielding at the end of the stack', function () {
     var stack = []
     var called = false

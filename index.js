@@ -31,6 +31,9 @@ function compose (middleware) {
    */
 
   return function (context, next) {
+    if (next && typeof next !== 'function') {
+      throw new TypeError('Next must be a function when specified')
+    }
     // last called middleware #
     let index = -1
     return dispatch(0)
