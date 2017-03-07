@@ -335,4 +335,17 @@ describe('Koa Compose', function () {
       ctx.should.eql({ middleware: 1, next: 1 })
     })
   })
+
+  it('should allow not calling next', () => {
+    const middleware = [(ctx) => {
+      ctx.middleware++
+    }]
+    const ctx = {
+      middleware: 0
+    }
+
+    return compose(middleware)(ctx).then(() => {
+      ctx.should.eql({ middleware: 1 })
+    })
+  })
 })
