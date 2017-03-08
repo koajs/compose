@@ -12,7 +12,8 @@
     "index.js"
   ],
   "dependencies": {
-    "any-promise": "^1.1.0"
+    "any-promise": "^1.1.0",
+    "koa-call-middleware": "^1.0.0"
   },
   "devDependencies": {
     "co": "^4.6.0",

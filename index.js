@@ -1,6 +1,7 @@
 'use strict'
 
 const Promise = require('any-promise')
+const callMiddleware = require('koa-call-middleware')
 
 /**
  * Expose compositor.
@@ -41,9 +42,17 @@ function compose (middleware) {
       if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {
-        return Promise.resolve(fn(context, function next () {
-          return dispatch(i + 1)
-        }))
+        if (fn) {
+          return Promise.resolve(callMiddleware(fn, context, function next () {
+            return dispatch(i + 1)
+          }))
+        } else {
+          if (next) {
+            return Promise.resolve(next())
+          } else {
+            return Promise.resolve()
+          }
+        }
       } catch (err) {
         return Promise.reject(err)
       }

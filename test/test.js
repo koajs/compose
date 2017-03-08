@@ -85,6 +85,66 @@ describe('Koa Compose', function () {
     })
   })
 
+  it('should wrap functions with wrappers', function () {
+    var arr = []
+    var stack = []
+
+    stack.push(function * (context, next) {
+      arr.push(1)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      arr.push(6)
+    })
+
+    stack.push(function * (context, next) {
+      arr.push(2)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      arr.push(5)
+    })
+
+    stack.push(function * (context, next) {
+      arr.push(3)
+      yield wait(1)
+      yield next()
+      yield wait(1)
+      arr.push(4)
+    })
+
+    return compose(stack)({
+      wrappers: [co.wrap]
+    }).then(function () {
+      arr.should.eql([1, 2, 3, 4, 5, 6])
+    })
+  })
+
+  it('should use wrappers in the correct order', function () {
+    let completed = []
+    let stack = []
+    let arr = []
+
+    stack.push(function * (context, next) {
+      arr.push(1)
+      yield next()
+    })
+
+    stack.push(function * (context, next) {
+      arr.push(2)
+      yield next()
+    })
+
+    return compose(stack)({
+      wrappers: [co.wrap, function (fn) {
+        return (ctx, next) => fn(ctx, next).then(completed.push(fn))
+      }]
+    }).then(function () {
+      arr.should.eql([1, 2])
+      completed.length.should.eql(stack.length)
+    })
+  })
+
   it('should only accept an array', function () {
     var err
     try {
@@ -93,6 +153,26 @@ describe('Koa Compose', function () {
       err = e
     }
     return (err).should.be.instanceof(TypeError)
+  })
+
+  it('should throw an error if calling generators or non-functions', function () {
+    var stack = [
+      function * () {}
+    ]
+    return compose(stack)({}).then(function () {
+      throw new Error('No error thrown')
+    }).catch(function (err) {
+      (err).should.be.instanceof(TypeError)
+    }).then(function () {
+      stack = [
+        { key: 'value' }
+      ]
+      return compose(stack)({})
+    }).then(function () {
+      throw new Error('No error thrown')
+    }).catch(function (err) {
+      (err).should.be.instanceof(TypeError)
+    })
   })
 
   it('should work with 0 middleware', function () {
