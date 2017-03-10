@@ -318,27 +318,18 @@ describe('Koa Compose', function () {
     }
   })
 
-  it('should not get stuck on the passed in next', () => {
-    const middleware = [(ctx, next) => {
-      ctx.middleware++
-      return next()
-    }]
-    const ctx = {
-      middleware: 0,
-      next: 0
-    }
-
-    return compose(middleware)(ctx, (ctx, next) => {
-      ctx.next++
-      return next()
-    }).then(() => {
-      ctx.should.eql({ middleware: 1, next: 1 })
+  it('should not call next with middleware parameters', () => {
+    return compose([])({}, (ctx, next) => {
+      assert.strictEqual(ctx, undefined)
+      assert.strictEqual(next, undefined)
+      return Promise.resolve()
     })
   })
 
-  it('should allow not calling next', () => {
-    const middleware = [(ctx) => {
+  it('should work with skipNext', () => {
+    const middleware = [(ctx, next, skipNext) => {
       ctx.middleware++
+      return skipNext()
     }]
     const ctx = {
       middleware: 0
@@ -346,6 +337,21 @@ describe('Koa Compose', function () {
 
     return compose(middleware)(ctx).then(() => {
       ctx.should.eql({ middleware: 1 })
+    })
+  })
+
+  it('should throw if skipNext() is called multiple times', function () {
+    const middleware = [(ctx, next, skipNext) => {
+      skipNext()
+      return skipNext()
+    }]
+
+    return compose(middleware)({})
+    .then(function () {
+      throw new Error('promise was not rejected')
+    })
+    .catch(function (e) {
+      e.should.be.instanceof(Error)
     })
   })
 })

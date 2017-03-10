@@ -9,47 +9,6 @@ const Promise = require('any-promise')
 module.exports = compose
 
 /**
- * Default skip function used when none is specified.
- *
- * @return {Promise}
- * @api public
- */
-
-function defaultSkip() {
-  return Promise.resolve()
-}
-
-/**
- * Call a middleware and ensure that a promise is always returned by 
- * transforming exceptions into rejected promises.
- *
- * @param {Function} middleware
- * @param {object} context
- * @param {Function} next
- * @param {Function} skipNext
- * @return {Promise}
- * @api public
- */
- 
-function callMiddleware(middleware, context, next, skip) {
-  try {
-    const result = middleware(context, next, skip)
-    if (typeof result === 'object' && result !== null && typeof result.then === 'function') {
-      return result
-    }
-    if (result === undefined) {
-      if (middleware === skip) {
-        throw new Error('skipNext infinite loop detected');
-      }
-      return callMiddleware(skip, context);
-    }
-    throw new TypeError('Middleware must return a Promise')
-  } catch (err) {
-    return Promise.reject(err)
-  }
-}
-
-/**
  * Compose `middleware` returning
  * a fully valid middleware comprised
  * of all those which are passed.
@@ -81,6 +40,18 @@ function compose (middleware) {
     if (skipNext !== undefined && typeof skipNext !== 'function') {
       throw new TypeError('skipNext must be a function when specified')
     }
+    let hasTerminated = false;
+    const skipFn = () => {
+      if (hasTerminated) {
+        throw new Error('skipNext() called multiple times');
+      }
+      hasTerminated = true;
+      if (skipNext) {
+        return skipNext();
+      }
+      return Promise.resolve();
+    }
+    const terminate = next || skipFn
     // last called middleware #
     let lastCalled = -1
     return dispatch(0)
@@ -94,14 +65,25 @@ function compose (middleware) {
     function dispatch (i) {
       if (i <= lastCalled) return Promise.reject(new Error('next() called multiple times'))
       lastCalled = i
-      const nextFn = function next () {
-        return dispatch(i + 1)
+      try {
+        let result
+        let nextCalled = false;
+        if (i < middleware.length) {
+          const nextFn = function next () {
+            nextCalled = true;
+            return dispatch(i + 1)
+          }
+          result = middleware[i](context, nextFn, skipFn)
+        } else {
+          result = terminate()
+        }
+        if (typeof result === 'object' && result !== null && typeof result.then === 'function') {
+          return result
+        }
+        throw new TypeError('Middleware must return a Promise')
+      } catch (err) {
+        return Promise.reject(err)
       }
-      const skipFn = skipNext === undefined ? defaultSkip: skipNext
-      let middlewareFn = middleware[i]
-      if (i === middleware.length) middlewareFn = next
-      if (middlewareFn === undefined) middlewareFn = skipFn
-      return callMiddleware(middlewareFn, context, nextFn, skipFn)
     } 
   }
 }
