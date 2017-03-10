@@ -318,21 +318,10 @@ describe('Koa Compose', function () {
     }
   })
 
-  it('should not get stuck on the passed in next', () => {
-    const middleware = [(ctx, next) => {
-      ctx.middleware++
-      return next()
-    }]
-    const ctx = {
-      middleware: 0,
-      next: 0
-    }
-
-    return compose(middleware)(ctx, (ctx, next) => {
-      ctx.next++
-      return next()
-    }).then(() => {
-      ctx.should.eql({ middleware: 1, next: 1 })
+  it('does not call next with middleware parameters', () => {
+    return compose([])({}, (ctx, next) => {
+      assert.strictEqual(ctx, undefined)
+      assert.strictEqual(next, undefined)
     })
   })
 
