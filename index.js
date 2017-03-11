@@ -40,37 +40,35 @@ function compose (middleware) {
     if (skipNext !== undefined && typeof skipNext !== 'function') {
       throw new TypeError('skipNext must be a function when specified')
     }
-    let hasTerminated = false;
+    let hasTerminated = false
     const skipFn = () => {
       if (hasTerminated) {
-        throw new Error('skipNext() called multiple times');
+        throw new Error('skipNext() called multiple times')
       }
-      hasTerminated = true;
+      hasTerminated = true
       if (skipNext) {
-        return skipNext();
+        return skipNext()
       }
-      return Promise.resolve();
+      return Promise.resolve()
     }
     const terminate = next || skipFn
     // last called middleware #
     let lastCalled = -1
     return dispatch(0)
-    
+
     /**
      * Dispatch to the i-th middleware in the composed stack, capturing
      * the state necessary to continue the process in the `next()` closure.
      * @param {Number} i
      */
-     
+
     function dispatch (i) {
       if (i <= lastCalled) return Promise.reject(new Error('next() called multiple times'))
       lastCalled = i
       try {
         let result
-        let nextCalled = false;
         if (i < middleware.length) {
           const nextFn = function next () {
-            nextCalled = true;
             return dispatch(i + 1)
           }
           result = middleware[i](context, nextFn, skipFn)
@@ -84,6 +82,6 @@ function compose (middleware) {
       } catch (err) {
         return Promise.reject(err)
       }
-    } 
+    }
   }
 }
