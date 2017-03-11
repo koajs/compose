@@ -120,6 +120,17 @@ describe('Koa Compose', function () {
     return (err).should.be.instanceof(TypeError)
   })
 
+  it('should only accept functions for skipNext', function () {
+    var err
+    var skipNext = 'Not  null, not a function'
+    try {
+      (compose([])({}, undefined, skipNext)).should.throw()
+    } catch (e) {
+      err = e
+    }
+    return (err).should.be.instanceof(TypeError)
+  })
+
   it('should work when yielding at the end of the stack', function () {
     var stack = []
     var called = false
@@ -326,7 +337,7 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should work with skipNext', () => {
+  it('should provide a default skipNext', () => {
     const middleware = [(ctx, next, skipNext) => {
       ctx.middleware++
       return skipNext()
@@ -337,6 +348,45 @@ describe('Koa Compose', function () {
 
     return compose(middleware)(ctx).then(() => {
       ctx.should.eql({ middleware: 1 })
+    })
+  })
+
+  it('should call provided skipNext', () => {
+    const middleware = [(ctx, next, skipNext) => {
+      ctx.middleware++
+      return skipNext()
+    }]
+    const ctx = {
+      middleware: 0,
+      skipNext: 0
+    }
+    const next = () => Promise.resolve()
+    const skipNext = () => {
+      ctx.skipNext++
+      return Promise.resolve()
+    }
+
+    return compose(middleware)(ctx, next, skipNext).then(() => {
+      ctx.should.eql({ middleware: 1, skipNext: 1 })
+    })
+  })
+
+  it('should call skipNext in next if next is not provided and skipNext is', () => {
+    const middleware = [(ctx, next, skipNext) => {
+      ctx.middleware++
+      return next()
+    }]
+    const ctx = {
+      middleware: 0,
+      skipNext: 0
+    }
+    const skipNext = () => {
+      ctx.skipNext++
+      return Promise.resolve()
+    }
+
+    return compose(middleware)(ctx, undefined, skipNext).then(() => {
+      ctx.should.eql({ middleware: 1, skipNext: 1 })
     })
   })
 
