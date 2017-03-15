@@ -29,8 +29,5 @@
     "test-cov": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
     "test-travis": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   },
-  "publishConfig": {
-    "tag": "next"
-  },
   "license": "MIT"
 }
