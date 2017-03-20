@@ -1,7 +1,5 @@
 'use strict'
 
-const Promise = require('any-promise')
-
 /**
  * Expose compositor.
  */
