@@ -11,9 +11,7 @@
   "files": [
     "index.js"
   ],
-  "dependencies": {
-    "any-promise": "^1.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "istanbul": "^0.4.2",
     "matcha": "^0.7.0",
