@@ -169,6 +169,26 @@ describe('Koa Compose', function () {
     return compose(stack)(ctx)
   })
 
+  it('should return the context',function(){
+    var ctx = {}
+
+    var stack = []
+
+    stack.push(async (ctx2,next)=>{
+      ctx2.step1 = true
+      return next(ctx2)
+    })
+
+    stack.push(async (ctx2,next)=>{
+      ctx2.step2 = true
+      return next(ctx2)
+    })
+
+    return compose(stack)(ctx).then((out)=>{
+      out.should.equal(ctx)
+    })
+  })
+
   it('should catch downstream errors', function () {
     var arr = []
     var stack = []

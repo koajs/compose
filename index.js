@@ -37,7 +37,7 @@ function compose (middleware) {
       index = i
       let fn = middleware[i]
       if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
+      if (!fn) return Promise.resolve(context)
       try {
         return Promise.resolve(fn(context, function next () {
           return dispatch(i + 1)
