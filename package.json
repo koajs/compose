@@ -14,17 +14,16 @@
   "dependencies": {},
   "devDependencies": {
     "istanbul": "^0.4.2",
+    "jest": "^19.0.2",
     "matcha": "^0.7.0",
-    "mocha": "^3.1.2",
-    "should": "^2.0.0",
     "standard": "^9.0.1"
   },
   "scripts": {
     "bench": "matcha bench/bench.js",
     "lint": "standard index.js test/*.js",
-    "test": "mocha --require should --reporter spec",
-    "test-cov": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "jest",
+    "test-cov": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/jest",
+    "test-travis": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/jest --coverage"
   },
   "license": "MIT"
 }
