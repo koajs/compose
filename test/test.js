@@ -1,6 +1,6 @@
 'use strict'
 
-/* eslint-env mocha */
+/* eslint-env jest */
 
 const compose = require('..')
 const assert = require('assert')
@@ -14,9 +14,9 @@ function isPromise (x) {
 }
 
 describe('Koa Compose', function () {
-  it('should work', function () {
-    var arr = []
-    var stack = []
+  it('should work', async () => {
+    const arr = []
+    const stack = []
 
     stack.push(async (context, next) => {
       arr.push(1)
@@ -42,9 +42,8 @@ describe('Koa Compose', function () {
       arr.push(4)
     })
 
-    return compose(stack)({}).then(function () {
-      arr.should.eql([1, 2, 3, 4, 5, 6])
-    })
+    await compose(stack)({})
+    expect(arr).toEqual(expect.arrayContaining([1, 2, 3, 4, 5, 6]))
   })
 
   it('should be able to be called twice', () => {
@@ -81,21 +80,20 @@ describe('Koa Compose', function () {
 
     return fn(ctx1).then(() => {
       assert.deepEqual(out, ctx1.arr)
-
       return fn(ctx2)
     }).then(() => {
       assert.deepEqual(out, ctx2.arr)
     })
   })
 
-  it('should only accept an array', function () {
-    var err
+  it('should only accept an array', () => {
+    let err
     try {
-      (compose()).should.throw()
+      expect(compose()).toThrow()
     } catch (e) {
       err = e
     }
-    return (err).should.be.instanceof(TypeError)
+    return expect(err).toBeInstanceOf(TypeError)
   })
 
   it('should create next functions that return a Promise', function () {
@@ -118,17 +116,17 @@ describe('Koa Compose', function () {
     return compose([])({})
   })
 
-  it('should only accept middleware as functions', function () {
-    var err
+  it('should only accept middleware as functions', () => {
+    let err
     try {
-      (compose([{}])).should.throw()
+      expect(compose([{}])).toThrow()
     } catch (e) {
       err = e
     }
-    return (err).should.be.instanceof(TypeError)
+    return expect(err).toBeInstanceOf(TypeError)
   })
 
-  it('should work when yielding at the end of the stack', function () {
+  it('should work when yielding at the end of the stack', async () => {
     var stack = []
     var called = false
 
@@ -137,12 +135,11 @@ describe('Koa Compose', function () {
       called = true
     })
 
-    return compose(stack)({}).then(function () {
-      assert(called)
-    })
+    await compose(stack)({})
+    assert(called)
   })
 
-  it('should reject on errors in middleware', function () {
+  it('should reject on errors in middleware', () => {
     var stack = []
 
     stack.push(() => { throw new Error() })
@@ -152,46 +149,46 @@ describe('Koa Compose', function () {
         throw new Error('promise was not rejected')
       })
       .catch(function (e) {
-        e.should.be.instanceof(Error)
+        expect(e).toBeInstanceOf(Error)
       })
   })
 
-  it('should work when yielding at the end of the stack with yield*', function () {
+  it('should work when yielding at the end of the stack with yield*', () => {
     var stack = []
 
     stack.push(async (ctx, next) => {
       await next
     })
 
-    compose(stack)({})
+    return compose(stack)({})
   })
 
-  it('should keep the context', function () {
-    var ctx = {}
+  it('should keep the context', () => {
+    const ctx = {}
 
-    var stack = []
+    const stack = []
 
     stack.push(async (ctx2, next) => {
       await next()
-      ctx2.should.equal(ctx)
+      expect(ctx2).toEqual(ctx)
     })
 
     stack.push(async (ctx2, next) => {
       await next()
-      ctx2.should.equal(ctx)
+      expect(ctx2).toEqual(ctx)
     })
 
     stack.push(async (ctx2, next) => {
       await next()
-      ctx2.should.equal(ctx)
+      expect(ctx2).toEqual(ctx)
     })
 
     return compose(stack)(ctx)
   })
 
-  it('should catch downstream errors', function () {
-    var arr = []
-    var stack = []
+  it('should catch downstream errors', async () => {
+    const arr = []
+    const stack = []
 
     stack.push(async (ctx, next) => {
       arr.push(1)
@@ -208,16 +205,14 @@ describe('Koa Compose', function () {
     stack.push(async (ctx, next) => {
       arr.push(4)
       throw new Error()
-      // arr.push(5)
     })
 
-    return compose(stack)({}).then(function () {
-      arr.should.eql([1, 6, 4, 2, 3])
-    })
+    await compose(stack)({})
+    expect(arr).toEqual([1, 6, 4, 2, 3])
   })
 
-  it('should compose w/ next', function () {
-    var called = false
+  it('should compose w/ next', () => {
+    let called = false
 
     return compose([])({}, async () => {
       called = true
@@ -226,8 +221,8 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should handle errors in wrapped non-async functions', function () {
-    var stack = []
+  it('should handle errors in wrapped non-async functions', () => {
+    const stack = []
 
     stack.push(function () {
       throw new Error()
@@ -236,12 +231,12 @@ describe('Koa Compose', function () {
     return compose(stack)({}).then(function () {
       throw new Error('promise was not rejected')
     }).catch(function (e) {
-      e.should.be.instanceof(Error)
+      expect(e).toBeInstanceOf(Error)
     })
   })
 
   // https://github.com/koajs/compose/pull/27#issuecomment-143109739
-  it('should compose w/ other compositions', function () {
+  it('should compose w/ other compositions', () => {
     var called = []
 
     return compose([
@@ -262,7 +257,7 @@ describe('Koa Compose', function () {
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
 
-  it('should throw if next() is called multiple times', function () {
+  it('should throw if next() is called multiple times', () => {
     return compose([
       async (ctx, next) => {
         await next()
@@ -275,9 +270,9 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should return a valid middleware', function () {
-    var val = 0
-    compose([
+  it('should return a valid middleware', () => {
+    let val = 0
+    return compose([
       compose([
         (ctx, next) => {
           val++
@@ -293,27 +288,28 @@ describe('Koa Compose', function () {
         return next()
       }
     ])({}).then(function () {
-      val.should.equal(3)
+      expect(val).toEqual(3)
     })
   })
 
-  it('should return last return value', function () {
-    var stack = []
+  it('should return last return value', () => {
+    const stack = []
 
     stack.push(async (context, next) => {
       var val = await next()
-      val.should.equal(2)
+      expect(val).toEqual(2)
       return 1
     })
 
     stack.push(async (context, next) => {
-      var val = await next()
-      val.should.equal(0)
+      const val = await next()
+      expect(val).toEqual(0)
       return 2
     })
-    var next = () => 0
+
+    const next = () => 0
     return compose(stack)({}, next).then(function (val) {
-      val.should.equal(1)
+      expect(val).toEqual(1)
     })
   })
 
@@ -349,7 +345,7 @@ describe('Koa Compose', function () {
       ctx.next++
       return next()
     }).then(() => {
-      ctx.should.eql({ middleware: 1, next: 1 })
+      expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
 })
