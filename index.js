@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
- 
+
 const { isArray } = Array
 
 /**
