@@ -1,6 +1,12 @@
 'use strict'
 
 /**
+ * Module dependencies.
+ */
+ 
+const { isArray } = Array
+
+/**
  * Expose compositor.
  */
 
@@ -17,9 +23,11 @@ module.exports = compose
  */
 
 function compose (middleware) {
-  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+  if (!isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
-    if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
+    if (typeof fn !== 'function' && !isArray(fn)) {
+      throw new TypeError('Middleware must be composed of functions, or array of functions!')
+    }
   }
 
   /**
@@ -36,6 +44,7 @@ function compose (middleware) {
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
       let fn = middleware[i]
+      if (isArray(fn)) fn = compose(fn)
       if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {

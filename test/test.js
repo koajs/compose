@@ -10,6 +10,112 @@ function wait (ms) {
 }
 
 describe('Koa Compose', function () {
+  describe('when rescurive', function () {
+    it('should work', () => {
+      const arr = []
+      const stack = []
+      
+      stack.push(async (ctx, next) => {
+        arr.push(1)
+        await wait(1)
+        await next()
+        await wait(1)
+        arr.push(8)
+      })
+      
+      stack.push([
+        async (ctx, next) => {
+          arr.push(2)
+          await wait(1)
+          await next()
+          await wait(1)
+          arr.push(7)
+        },
+        async (ctx, next) => {
+          arr.push(3)
+          await wait(1)
+          await next()
+          await wait(1)
+          arr.push(6)
+        }
+      ])
+      
+      stack.push(async (ctx, next) => {
+        arr.push(4)
+        await wait(1)
+        await next()
+        await wait(1)
+        arr.push(5)
+      })
+      
+      return compose(stack)({}).then(function () {
+        arr.should.eql([1, 2, 3, 4, 5, 6, 7, 8])
+      })
+    })
+    
+    it('should be able to be called twice', () => {
+      const stack = []
+      
+      stack.push(async (context, next) => {
+        context.arr.push(1)
+        await wait(1)
+        await next()
+        await wait(1)
+        context.arr.push(8)
+      })
+      
+      stack.push([
+        async (context, next) => {
+          context.arr.push(2)
+          await wait(1)
+          await next()
+          await wait(1)
+          context.arr.push(7)
+        },
+        async (context, next) => {
+          context.arr.push(3)
+          await wait(1)
+          await next()
+          await wait(1)
+          context.arr.push(6)
+        }
+      ])
+      
+      stack.push(async (context, next) => {
+        context.arr.push(4)
+        await wait(1)
+        await next()
+        await wait(1)
+        context.arr.push(5)
+      })
+      
+      const fn = compose(stack)
+      const ctx1 = { arr: [] }
+      const ctx2 = { arr: [] }
+      const out = [1, 2, 3, 4, 5, 6, 7, 8]
+
+      return fn(ctx1).then(() => {
+        assert.deepEqual(out, ctx1.arr)
+        return fn(ctx2)
+      }).then(() => {
+        assert.deepEqual(out, ctx2.arr)
+      })
+    })
+    
+    it('should throw if next() is called multiple times within recursion', function () {
+      return compose([[
+        async (ctx, next) => {
+          await next()
+          await next()
+        }
+      ]])({}).then(() => {
+        throw new Error('boom')
+      }, (err) => {
+        assert(/multiple times/.test(err.message))
+      })
+    })
+  })
+  
   it('should work', function () {
     var arr = []
     var stack = []
@@ -98,7 +204,7 @@ describe('Koa Compose', function () {
     return compose([])({})
   })
 
-  it('should only accept middleware as functions', function () {
+  it('should accept middleware as functions', function () {
     var err
     try {
       (compose([{}])).should.throw()
