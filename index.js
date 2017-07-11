@@ -28,7 +28,7 @@ function compose (middleware) {
    * @api public
    */
 
-  return function (context, next) {
+  const stack = function (context, next) {
     // last called middleware #
     let index = -1
     return dispatch(0)
@@ -47,4 +47,6 @@ function compose (middleware) {
       }
     }
   }
+  stack.middleware = middleware;
+  return stack;
 }
