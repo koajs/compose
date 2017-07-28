@@ -1,6 +1,6 @@
 'use strict'
 
-const compose = require('..')
+const { compose } = require('../lib')
 
 suite('compose', () => {
   set('type', 'adaptive')
