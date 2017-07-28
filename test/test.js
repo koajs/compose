@@ -2,7 +2,7 @@
 
 /* eslint-env mocha */
 
-const { compose } = require('../lib')
+const compose = require('../async')
 const assert = require('assert')
 
 function wait (ms) {

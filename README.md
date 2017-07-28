@@ -29,6 +29,10 @@ import { compose, composeSync } from "ctx-compose";
 
 // CommonJS import
 const { compose, composeSync } = require("ctx-compose");
+
+// Specific and lightweight import
+const compose = require("ctx-compose/async");
+const composeSync = require("ctx-compose/sync");
 ```
 
 And it is used like this:
@@ -46,9 +50,39 @@ composeSync(middleware)(context);
 console.log(context);
 ```
 
-This works exactly as [Koa middlewares](https://github.com/koajs/koa/blob/master/docs/guide.md). For the `composeSync` middleware, it works like this:
+### Asynchronous
+
+The `compose` function works exactly as [Koa middlewares](https://github.com/koajs/koa/blob/master/docs/guide.md) and supports asynchronous and synchronous middleware.
 
 ```js
+const compose = require("ctx-compose/async");
+const Bluebird = require("bluebird");
+
+async function log(ctx, next) {
+  console.log(">>>", ctx.value);
+  await next();
+  console.log("<<<", ctx.value);
+}
+
+async function increaser(ctx) {
+  await Bluebird.delay(1000); // wait 1000ms
+  ctx.value = ctx.value + 1;
+}
+
+const context = { value: 4 };
+const middleware = [log, increaser];
+compose(middleware)(context).then(() => {
+  console.log("Value:", context.value);
+});
+```
+
+### Synchronous
+
+The `composeSync` middleware works like this. It doesn't support async middleware:
+
+```js
+const composeSync = require("ctx-compose/sync");
+
 function log(ctx, next) {
   console.log(">>>", ctx.value);
   next();

@@ -4,8 +4,7 @@
   "repository": "mrpatiwi/ctx-compose",
   "license": "MIT",
   "version": "1.2.0",
-  "main": "lib/index.js",
-  "module": "src/index.js",
+  "main": "index.js",
   "keywords": [
     "async",
     "sync",
@@ -20,6 +19,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.6.0",
+    "bluebird": "^3.5.0",
     "eslint": "^4.3.0",
     "eslint-config-prettier": "^2.3.0",
     "eslint-plugin-prettier": "^2.1.2",

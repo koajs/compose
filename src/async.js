@@ -8,7 +8,7 @@
  * @api public
  */
 
-export default function compose(middleware) {
+module.exports = function composeAsync(middleware) {
   if (!Array.isArray(middleware)) {
     throw new TypeError("Middleware stack must be an array!");
   }
@@ -49,4 +49,4 @@ export default function compose(middleware) {
       }
     }
   };
-}
+};
