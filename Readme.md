@@ -1,40 +1,93 @@
 
-# koa-compose
+# ctx-compose
 
 [![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][codecov-image]][codecov-url]
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
- Compose middleware.
+:globe_with_meridians: Universal middleware composing library based on [koajs/koa-compose](https://github.com/koajs/compose). Works with asynchronous and synchronous middleware.
 
 ## Installation
 
-```js
-$ npm install koa-compose
+```sh
+npm install ctx-compose
+
+# or:
+yarn add ctx-compose
 ```
 
-## API
+## Usage
 
-### compose([a, b, c, ...])
+Import this module with:
 
-  Compose the given middleware and return middleware.
+```js
+// Module import
+import { compose, composeSync } from "ctx-compose";
+
+// CommonJS import
+const { compose, composeSync } = require("ctx-compose");
+```
+
+And it is used like this:
+
+```js
+const middleware = [/* ... */];
+const context = {}; // it gets mutated along the middlewares
+
+// Asynchronous:
+await compose(middleware)(context);
+
+// Synchronous:
+composeSync(middleware)(context);
+
+console.log(context);
+```
+
+This works exactly as [Koa middlewares](https://github.com/koajs/koa/blob/master/docs/guide.md). For the `composeSync` middleware, it works like this:
+
+```js
+function log(ctx, next) {
+  console.log(">>>", ctx.value);
+  next();
+  console.log("<<<", ctx.value);
+}
+
+function increaser(ctx) {
+  ctx.value = ctx.value + 1;
+}
+
+const context = { value: 4 };
+const middleware = [log, increaser];
+composeSync(middleware)(context);
+console.log("Value:", context.value);
+```
+
+Console output:
+
+```txt
+>>> 4
+<<< 5
+Value: 5
+```
+
+For convenience, `compose` and `composeSync` now returns the `context` object:
+
+```js
+const middleware = [/* ... */];
+
+const context = await compose(middleware)({ value: 4 });
+```
 
 ## License
 
   MIT
 
-[npm-image]: https://img.shields.io/npm/v/koa-compose.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/koa-compose
-[travis-image]: https://img.shields.io/travis/koajs/compose/next.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koajs/compose
-[codecov-image]: https://img.shields.io/codecov/c/github/koajs/compose/next.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/koajs/compose
-[david-image]: http://img.shields.io/david/koajs/compose.svg?style=flat-square
-[david-url]: https://david-dm.org/koajs/compose
-[license-image]: http://img.shields.io/npm/l/koa-compose.svg?style=flat-square
+[npm-image]: https://img.shields.io/npm/v/ctx-compose.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/ctx-compose
+[david-image]: http://img.shields.io/david/mrpatiwi/compose.svg?style=flat-square
+[david-url]: https://david-dm.org/mrpatiwi/compose
+[license-image]: http://img.shields.io/npm/l/ctx-compose.svg?style=flat-square
 [license-url]: LICENSE
-[downloads-image]: http://img.shields.io/npm/dm/koa-compose.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/koa-compose
+[downloads-image]: http://img.shields.io/npm/dm/ctx-compose.svg?style=flat-square
+[downloads-url]: https://npmjs.org/package/ctx-compose

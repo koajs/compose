@@ -36,7 +36,7 @@ export default function compose(middleware) {
       let fn = middleware[i];
       if (i === middleware.length) fn = next;
       if (!fn) {
-        return Promise.resolve();
+        return Promise.resolve(context);
       }
       try {
         return Promise.resolve(
