@@ -20,7 +20,7 @@ export default function compose(middleware) {
 
   /**
    * @param {Object} context
-   * @return {Object}
+   * @return {undefined}
    * @api public
    */
 
@@ -36,7 +36,7 @@ export default function compose(middleware) {
       let fn = middleware[i];
       if (i === middleware.length) fn = next;
       if (!fn) {
-        return context;
+        return undefined;
       }
       return fn(context, function next() {
         return dispatch(i + 1);

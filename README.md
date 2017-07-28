@@ -73,14 +73,6 @@ Console output:
 Value: 5
 ```
 
-For convenience, `compose` and `composeSync` now returns the `context` object:
-
-```js
-const middleware = [/* ... */];
-
-const context = await compose(middleware)({ value: 4 });
-```
-
 ## License
 
   MIT
