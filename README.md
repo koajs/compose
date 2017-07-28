@@ -33,6 +33,10 @@ const { compose, composeSync } = require("ctx-compose");
 // Specific and lightweight import
 const compose = require("ctx-compose/async");
 const composeSync = require("ctx-compose/sync");
+
+// "Functional" wrapper
+const compose = require("ctx-compose/fp/async");
+const composeSync = require("ctx-compose/fp/sync");
 ```
 
 And it is used like this:
@@ -105,6 +109,29 @@ Console output:
 >>> 4
 <<< 5
 Value: 5
+```
+
+## Functional helper
+
+For convenience, you can use this wrapper that creates a shallow copy of the initial `context` object and return the final object as the result.
+
+**The context object between middlewares is still mutating**
+
+```js
+const compose = require("ctx-compose/fp/async");
+
+const middleware = [log, increaser];
+compose(middleware)({ value: 4 }).then(context => {
+  console.log("Value:", context.value);
+})
+```
+
+```js
+const composeSync = require("ctx-compose/fp/sync");
+
+const middleware = [log, increaser];
+const context = composeSync(middleware)({ value: 4 });
+console.log("Value:", context.value);
 ```
 
 ## License

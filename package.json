@@ -13,7 +13,11 @@
   ],
   "files": [
     "lib",
-    "src"
+    "src",
+    "fp",
+    "index.js",
+    "async.js",
+    "sync.js"
   ],
   "dependencies": {},
   "devDependencies": {
