@@ -6,7 +6,9 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-:globe_with_meridians: Universal middleware composing library based on [koajs/koa-compose](https://github.com/koajs/compose). Works with asynchronous and synchronous middleware.
+:globe_with_meridians: Universal middleware composing library based on [koajs/koa-compose](https://github.com/koajs/compose). Works with asynchronous and synchronous middleware on browsers, Node.js and React-Native.
+
+**Create your own middleware-based module!**
 
 ## Installation
 
