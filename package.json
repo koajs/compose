@@ -1,30 +1,52 @@
 {
-  "name": "koa-compose",
-  "description": "compose Koa middleware",
-  "repository": "koajs/compose",
-  "version": "4.0.0",
+  "name": "ctx-compose",
+  "description": "Take off 'koa' from 'koa-compose' and make it universal.",
+  "repository": "mrpatiwi/ctx-compose",
+  "license": "MIT",
+  "version": "1.2.0",
+  "main": "index.js",
   "keywords": [
-    "koa",
+    "async",
+    "sync",
     "middleware",
     "compose"
   ],
   "files": [
-    "index.js"
+    "lib",
+    "src",
+    "fp",
+    "index.js",
+    "async.js",
+    "sync.js"
   ],
   "dependencies": {},
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "bluebird": "^3.5.0",
+    "eslint": "^4.3.0",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-prettier": "^2.1.2",
     "istanbul": "^0.4.2",
     "matcha": "^0.7.0",
     "mocha": "^3.1.2",
-    "should": "^2.0.0",
-    "standard": "^9.0.1"
+    "prettier": "^1.5.3",
+    "rimraf": "^2.6.1",
+    "should": "^2.0.0"
   },
   "scripts": {
     "bench": "matcha bench/bench.js",
-    "lint": "standard index.js test/*.js",
+    "prebuild": "rimraf lib/",
+    "build": "babel src/ --out-dir lib/ --source-maps",
+    "prepublish": "npm run build",
+    "lint": "eslint src",
     "test": "mocha --require should --reporter spec",
     "test-cov": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
     "test-travis": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   },
-  "license": "MIT"
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  }
 }
