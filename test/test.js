@@ -94,6 +94,22 @@ describe('Koa Compose', function () {
     return (err).should.be.instanceof(TypeError)
   })
 
+  it('should create next functions that return a Promise', function () {
+    const stack = []
+    const arr = []
+    for (let i = 0; i < 5; i++) {
+      stack.push((context, next) => {
+        arr.push(next())
+      })
+    }
+
+    compose(stack)({})
+
+    for (let next of arr) {
+      assert(next instanceof Promise, 'one of the functions next is not a Promise')
+    }
+  })
+
   it('should work with 0 middleware', function () {
     return compose([])({})
   })
