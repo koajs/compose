@@ -9,6 +9,10 @@ function wait (ms) {
   return new Promise((resolve) => setTimeout(resolve, ms || 1))
 }
 
+function isPromise (x) {
+  return x && typeof x.then === 'function'
+}
+
 describe('Koa Compose', function () {
   it('should work', function () {
     var arr = []
@@ -92,6 +96,22 @@ describe('Koa Compose', function () {
       err = e
     }
     return (err).should.be.instanceof(TypeError)
+  })
+
+  it('should create next functions that return a Promise', function () {
+    const stack = []
+    const arr = []
+    for (let i = 0; i < 5; i++) {
+      stack.push((context, next) => {
+        arr.push(next())
+      })
+    }
+
+    compose(stack)({})
+
+    for (let next of arr) {
+      assert(isPromise(next), 'one of the functions next is not a Promise')
+    }
   })
 
   it('should work with 0 middleware', function () {
