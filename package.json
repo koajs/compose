@@ -21,7 +21,7 @@
   "scripts": {
     "bench": "matcha bench/bench.js",
     "lint": "standard --fix .",
-    "test": "jest --forceExit --testEnvironment node --coverage"
+    "test": "jest --forceExit --coverage"
   },
   "jest": {
     "testEnvironment": "node"
