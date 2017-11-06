@@ -9,6 +9,10 @@ function wait (ms) {
   return new Promise((resolve) => setTimeout(resolve, ms || 1))
 }
 
+function isPromise (x) {
+  return x && typeof x.then === 'function'
+}
+
 describe('Koa Compose', function () {
   it('should work', function () {
     var arr = []
@@ -106,7 +110,7 @@ describe('Koa Compose', function () {
     compose(stack)({})
 
     for (let next of arr) {
-      assert(next instanceof Promise, 'one of the functions next is not a Promise')
+      assert(isPromise(next), 'one of the functions next is not a Promise')
     }
   })
 
