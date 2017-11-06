@@ -13,15 +13,15 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "codecov": "^2.2.0",
-    "jest": "^20.0.4",
+    "codecov": "^3.0.0",
+    "jest": "^21.0.0",
     "matcha": "^0.7.0",
-    "standard": "^9.0.2"
+    "standard": "^10.0.3"
   },
   "scripts": {
     "bench": "matcha bench/bench.js",
-    "lint": "standard index.js test/*.js",
-    "test": "jest --forceExit --coverage"
+    "lint": "standard --fix .",
+    "test": "jest --forceExit --testEnvironment node --coverage"
   },
   "jest": {
     "testEnvironment": "node"
