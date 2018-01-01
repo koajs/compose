@@ -9,9 +9,9 @@
     "compose"
   ],
   "files": [
-    "index.js"
+    "index.js",
+    "utils.js"
   ],
-  "dependencies": {},
   "devDependencies": {
     "codecov": "^3.0.0",
     "jest": "^21.0.0",
