@@ -1,36 +1,6 @@
 'use strict'
 
-/**
- * Helper function that checks whether passed parameter is NOT a function
- * @param {Object} fn
- * @return {Function}
- * @api private
- */
-const isNotFunction = obj => typeof obj !== 'function';
-
-/**
- * Helper function that wraps a function in function returning promise
- * @param {Function} fn
- * @return {Function}
- * @api private
- */
-const wrapHandler = (fn, ...args) => callCounter(() => Promise.resolve(fn(...args)))
-
-/**
- * Decorator that throws error when function was called multiple times
- * @param {Function} fn
- * @return {Function}
- * @api private
- */
-function callCounter(fn) {
-  let calls = 0;
-  return () => {
-    if (calls++) {
-      return Promise.reject(new Error('next() called multiple times'));
-    }
-    return fn();
-  }
-}
+const { isNotFunction } = require('./utils.js');
 
 /**
  * Expose compositor.
@@ -46,7 +16,7 @@ module.exports = compose
  * @return {Function}
  * @api public
  */
-function compose(middleware){
+function compose(middleware) {
   if (!Array.isArray(middleware)) {
     throw new TypeError('Middleware stack must be an array!');
   }
@@ -56,15 +26,54 @@ function compose(middleware){
 
   /**
    * @param {Object} context
+   * @param {Function} last next handler
    * @return {Promise}
    * @api public
    */
-  return (context, next) => {
-    if (!next) {
-      next = () => Promise.resolve();
-    }
-    next = callCounter(next);
-    const chain = middleware.reduceRight((next, fn) => wrapHandler(fn, context, next), next);
+  return (context, last) => {
+    const localMiddleware = isNotFunction(last) ? middleware : [...middleware, last];
+    const wrapper = (next, handler) => wrapHandler(handler, context, next);
+    const chain = localMiddleware.reduceRight(wrapper, getLastHandler());
     return chain();
   }
+}
+
+/**
+ * @return {Function}
+ * @api private
+ */
+function getLastHandler() {
+  let called = false;
+  return () => new Promise((resolve, reject) => {
+    if (called) return reject(new Error('next() called multiple times'));
+    called = true;
+    resolve();
+  });
+}
+
+/**
+ * Helper function that wraps handler in function returning promise
+ * @param {Function} handler
+ * @param {Object} context
+ * @param {Function} next
+ * @return {Function}
+ * @api private
+ */
+function wrapHandler(handler, context, next) {
+  let called = false;
+
+  /**
+   * @return {Promise}
+   * @api private
+   */
+  return () => new Promise((resolve, reject) => {
+    if (called) return reject(new Error('next() called multiple times'));
+    called = true;
+
+    try {
+      resolve(handler(context, next));
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
