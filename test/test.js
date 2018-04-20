@@ -348,4 +348,29 @@ describe('Koa Compose', function () {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
+
+  it('should work with pure functions', async () => {
+    const stack = []
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ a: 1 })
+      expect(result).toBe(undefined)
+      return { done: 'ok' }
+    })
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ b: ctx.a + 1 })
+      expect(result).toEqual({ c: 3 })
+    })
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ c: ++ctx.b })
+      expect(result).toEqual({ c: 3 })
+      return result
+    })
+
+    const context = Object.freeze({})
+    const result = await compose(stack)(context)
+    expect(result).toEqual({ done: 'ok' })
+  })
 })
