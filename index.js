@@ -1,11 +1,12 @@
 'use strict'
 
+const { DuplicateNextCallError } = require('./errors.js');
 const { isNotFunction } = require('./utils.js');
 
 /**
  * Expose compositor.
  */
-module.exports = compose
+module.exports = compose;
 
 /**
  * Compose `middleware` returning
@@ -27,14 +28,14 @@ function compose(middleware) {
   /**
    * @param {Object} context
    * @param {Function} last next handler
-   * @return {Promise}
+   * @return {Function}
    * @api public
    */
-  return (context, last) => {
+  return async (context, last) => {
     const localMiddleware = isNotFunction(last) ? middleware : [...middleware, last];
     const wrapper = (next, handler) => wrapHandler(handler, context, next);
     const chain = localMiddleware.reduceRight(wrapper, getLastHandler());
-    return chain();
+    return await chain();
   }
 }
 
@@ -44,15 +45,20 @@ function compose(middleware) {
  */
 function getLastHandler() {
   let called = false;
-  return () => new Promise((resolve, reject) => {
-    if (called) return reject(new Error('next() called multiple times'));
+
+  /**
+   * @return {Function}
+   * @api private
+   */
+  return async () => {
+    if (called) throw new DuplicateNextCallError();
     called = true;
-    resolve();
-  });
+    return called;
+  };
 }
 
 /**
- * Helper function that wraps handler in function returning promise
+ * Helper function that wraps handler in an async function
  * @param {Function} handler
  * @param {Object} context
  * @param {Function} next
@@ -63,17 +69,18 @@ function wrapHandler(handler, context, next) {
   let called = false;
 
   /**
-   * @return {Promise}
+   * @return {Function}
    * @api private
    */
-  return () => new Promise((resolve, reject) => {
-    if (called) return reject(new Error('next() called multiple times'));
+  return async () => {
+    if (called) throw new DuplicateNextCallError();
     called = true;
 
     try {
-      resolve(handler(context, next));
+      return await handler(context, next);
     } catch (err) {
-      reject(err);
+      // Simply rethrowing the error
+      throw err;
     }
-  });
+  };
 }
