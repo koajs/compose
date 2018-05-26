@@ -32,7 +32,8 @@ function compose (middleware) {
     // last called middleware #
     let index = -1
     return dispatch(0, context)
-    function dispatch (i, ctx) {
+    function dispatch (i, ctx = context) {
+      context = ctx
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
       let fn = middleware[i]
