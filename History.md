@@ -1,4 +1,9 @@
 
+4.1.0 / 2018-05-22
+==================
+
+  * improve: reduce stack trace by removing useless function call (#95)
+
 4.0.0 / 2017-04-12
 ==================
 
