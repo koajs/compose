@@ -101,7 +101,9 @@ describe('Koa Compose', function () {
     const arr = []
     for (let i = 0; i < 5; i++) {
       stack.push((context, next) => {
-        arr.push(next())
+        const res = next()
+        arr.push(res)
+        return res
       })
     }
 
