@@ -186,6 +186,19 @@ describe('Koa Compose', function () {
     return compose(stack)(ctx)
   })
 
+  it('should keep this', () => {
+    const ctx = {}
+
+    const stack = []
+
+    stack.push(async function (ctx2, next) {
+      await next()
+      expect(this).toEqual(42)
+    })
+
+    return compose(stack).call(42, ctx)
+  })
+
   it('should catch downstream errors', async () => {
     const arr = []
     const stack = []
