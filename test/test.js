@@ -188,7 +188,6 @@ describe('Koa Compose', function () {
 
   it('should keep this', () => {
     const ctx = {}
-
     const stack = []
 
     stack.push(async function (ctx2, next) {
