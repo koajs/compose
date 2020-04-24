@@ -16,7 +16,8 @@ module.exports = compose
  * @api public
  */
 
-function compose (middleware) {
+function compose(middleware) {
+  const _this = this;
   if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
@@ -32,8 +33,10 @@ function compose (middleware) {
     // last called middleware #
     let index = -1
     return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+    function dispatch(i) {
+      if (i <= index) return Promise.reject(new Error('next() called multiple times')).catch(function (err) {
+        _this.emit('error', err)
+      })
       index = i
       let fn = middleware[i]
       if (i === middleware.length) fn = next
