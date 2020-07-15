@@ -1,4 +1,3 @@
-
 # koa-compose
 
 [![NPM version][npm-image]][npm-url]
@@ -8,12 +7,15 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
- Compose middleware.
+Compose middleware.
 
 ## Installation
 
-```js
+```bash
+# npm ...
 $ npm install koa-compose
+# yarn ...
+$ yarn add koa-compose
 ```
 
 ## API
@@ -25,6 +27,7 @@ $ npm install koa-compose
 ## License
 
   MIT
+
 
 [npm-image]: https://img.shields.io/npm/v/koa-compose.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-compose
