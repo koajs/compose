@@ -1,3 +1,8 @@
+unreleased
+==================
+
+  * rewrite the source code with `asyn/await` over `promise`
+  * support Nodejs@10+
 
 4.1.0 / 2018-05-22
 ==================
