@@ -18,7 +18,7 @@ $ npm install koa-compose
 
 ## API
 
-### compose([a, b, c, ...])
+### compose([a, [b, c,] ...])
 
   Compose the given middleware and return middleware.
 
