@@ -348,43 +348,4 @@ describe('Koa Compose', function () {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
-
-  it('should flatten nested arrays ', async () => {
-    const middleware = [
-      (ctx, next) => { return ctx.middleware++, next() },
-      [
-        (ctx, next) => { return ctx.middleware++, next() },
-        (ctx, next) => { return ctx.middleware++, next() }
-      ],
-      (ctx, next) => { return ctx.middleware++, next() },
-    ]
-
-    const ctx = {
-      middleware: 0
-    }
-
-    await compose(middleware)(ctx, (ctx, next) => next()).then(() => {
-      expect(ctx).toEqual({ middleware: 4 })
-    })
-  })
-
-  it('should flatten and retain mw order', async () => {
-    const order = []
-    const middleware = [
-      (ctx, next) => { return order.push(1), next() },
-      [
-        (ctx, next) => { return order.push(2), next() },
-        (ctx, next) => { return order.push(3), next() },
-        [
-          (ctx, next) => { return order.push(4), next() },
-          (ctx, next) => { return order.push(5), next() }
-        ]
-      ],
-      (ctx, next) => { return order.push(6), next() },
-    ]
-
-    await compose(middleware)({}, (ctx, next) => next()).then(() => {
-      expect(order).toEqual([1, 2, 3, 4, 5, 6])
-    })
-  })
 })
