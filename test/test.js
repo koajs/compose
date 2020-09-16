@@ -141,16 +141,6 @@ describe('Koa Compose', function () {
       })
   })
 
-  it('should work when yielding at the end of the stack with yield*', () => {
-    var stack = []
-
-    stack.push(async (ctx, next) => {
-      await next
-    })
-
-    return compose(stack)({})
-  })
-
   it('should keep the context', () => {
     const ctx = {}
 
