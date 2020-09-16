@@ -87,13 +87,7 @@ describe('Koa Compose', function () {
   })
 
   it('should only accept an array', () => {
-    let err
-    try {
-      expect(compose()).toThrow()
-    } catch (e) {
-      err = e
-    }
-    return expect(err).toBeInstanceOf(TypeError)
+    expect(() => compose()).toThrow(TypeError)
   })
 
   it('should create next functions that return a Promise', function () {
@@ -117,13 +111,7 @@ describe('Koa Compose', function () {
   })
 
   it('should only accept middleware as functions', () => {
-    let err
-    try {
-      expect(compose([{}])).toThrow()
-    } catch (e) {
-      err = e
-    }
-    return expect(err).toBeInstanceOf(TypeError)
+    expect(() => compose([{}])).toThrow(TypeError)
   })
 
   it('should work when yielding at the end of the stack', async () => {
