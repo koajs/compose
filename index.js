@@ -1,4 +1,5 @@
 'use strict'
+const debug = require('debug')('koa:compose')
 
 /**
  * Expose compositor.
@@ -32,16 +33,18 @@ function compose (middleware) {
     // last called middleware #
     let index = -1
     return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+    async function dispatch (i) {
+      if (i <= index) throw new Error('next() called multiple times')
       index = i
       let fn = middleware[i]
-      if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
-      } catch (err) {
-        return Promise.reject(err)
+      const nextDispatcher = dispatch.bind(null, i + 1)
+      if (i === middleware.length && next) return next(context, nextDispatcher)
+      if (fn) {
+        debug('executing %s', fn._name || fn.name || '-')
+        const result = await fn(context, nextDispatcher)
+        debug('executed %s', fn._name || fn.name || '-')
+
+        return result
       }
     }
   }
