@@ -348,4 +348,22 @@ describe('Koa Compose', function () {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
+
+  it('should inject new middleware', async () => {
+    const injectMiddleware = () => {
+      called = true;
+    }
+
+    const middleware = [
+      async (_, next, use) => {
+        use(injectMiddleware);
+        await next();
+      }
+    ]
+
+    let called = false
+
+    await compose(middleware)({})
+    assert(called)
+  })
 })
