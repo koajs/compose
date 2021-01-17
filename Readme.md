@@ -13,7 +13,7 @@
 ## Installation
 
 ```js
-$ npm install koa-compose
+$ npm install https://github.com/anhhao-me/rugo-compose.git
 ```
 
 ## API
