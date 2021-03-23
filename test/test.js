@@ -348,4 +348,30 @@ describe('Koa Compose', function () {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
+
+  it('should return early', async () => {
+    const arr = []
+    const stack = []
+
+    stack.push(async (context, next) => {
+      arr.push(1)
+      await next()
+      arr.push(6)
+    })
+
+    stack.push(async (context, next) => {
+      arr.push(2)
+      await next.end()
+      arr.push(5)
+    })
+
+    stack.push(async (context, next) => {
+      arr.push(3)
+      await next()
+      arr.push(4)
+    })
+
+    await compose(stack)({})
+    expect(arr).toEqual(expect.arrayContaining([1, 2, 5, 6]))
+  })
 })

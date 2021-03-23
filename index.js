@@ -31,15 +31,28 @@ function compose (middleware) {
   return function (context, next) {
     // last called middleware #
     let index = -1
+
+    function end() {
+      return dispatch(0, true)
+    }
+
     return dispatch(0)
-    function dispatch (i) {
+    function dispatch(i, willEnd = false) {
+      if (willEnd) return Promise.resolve()
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
       let fn = middleware[i]
       if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {
-        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
+
+        function nextFn(){
+         return dispatch.call(null, i + 1)
+        }
+
+        nextFn.end = end
+
+        return Promise.resolve(fn(context, nextFn));
       } catch (err) {
         return Promise.reject(err)
       }
