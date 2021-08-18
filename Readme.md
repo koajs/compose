@@ -2,7 +2,7 @@
 # koa-compose
 
 [![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
+[![Node.js CI](https://github.com/koajs/compose/actions/workflows/node.js.yml/badge.svg?branch=master&event=push)](https://github.com/koajs/compose/actions/workflows/node.js.yml)
 [![Test coverage][codecov-image]][codecov-url]
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
@@ -28,8 +28,6 @@ $ npm install koa-compose
 
 [npm-image]: https://img.shields.io/npm/v/koa-compose.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-compose
-[travis-image]: https://img.shields.io/travis/koajs/compose/next.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koajs/compose
 [codecov-image]: https://img.shields.io/codecov/c/github/koajs/compose/next.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/koajs/compose
 [david-image]: http://img.shields.io/david/koajs/compose.svg?style=flat-square
