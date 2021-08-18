@@ -16,6 +16,10 @@
 $ npm install koa-compose
 ```
 
+## Maintainers
+
+- Lead: @jonathanong [@jongleberry](https://twitter.com/jongleberry)
+
 ## API
 
 ### compose([a, b, c, ...])
