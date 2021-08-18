@@ -8,7 +8,7 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
- Compose middleware.
+ Compose middleware specifically for Koa.
 
 ## Installation
 
@@ -22,7 +22,7 @@ $ npm install koa-compose
 
 ## API
 
-### compose([a, b, c, ...])
+### fn = compose([a, b, c, ...])
 
   Compose the given middleware and return middleware.
 
