@@ -133,10 +133,9 @@ describe('Koa Compose', function () {
     stack.push(() => { throw new Error() })
 
     return compose(stack)({})
-      .then(function () {
+      .then(() => {
         throw new Error('promise was not rejected')
-      })
-      .catch(function (e) {
+      }, (e) => {
         expect(e).toBeInstanceOf(Error)
       })
   })
@@ -206,9 +205,9 @@ describe('Koa Compose', function () {
       throw new Error()
     })
 
-    return compose(stack)({}).then(function () {
+    return compose(stack)({}).then(() => {
       throw new Error('promise was not rejected')
-    }).catch(function (e) {
+    }, (e) => {
       expect(e).toBeInstanceOf(Error)
     })
   })
