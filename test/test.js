@@ -47,7 +47,7 @@ describe('Koa Compose', function () {
   })
 
   it('should be able to be called twice', () => {
-    var stack = []
+    const stack = []
 
     stack.push(async (context, next) => {
       context.arr.push(1)
@@ -107,7 +107,7 @@ describe('Koa Compose', function () {
 
     compose(stack)({})
 
-    for (let next of arr) {
+    for (const next of arr) {
       assert(isPromise(next), 'one of the functions next is not a Promise')
     }
   })
@@ -127,8 +127,8 @@ describe('Koa Compose', function () {
   })
 
   it('should work when yielding at the end of the stack', async () => {
-    var stack = []
-    var called = false
+    const stack = []
+    let called = false
 
     stack.push(async (ctx, next) => {
       await next()
@@ -140,7 +140,7 @@ describe('Koa Compose', function () {
   })
 
   it('should reject on errors in middleware', () => {
-    var stack = []
+    const stack = []
 
     stack.push(() => { throw new Error() })
 
@@ -154,7 +154,7 @@ describe('Koa Compose', function () {
   })
 
   it('should work when yielding at the end of the stack with yield*', () => {
-    var stack = []
+    const stack = []
 
     stack.push(async (ctx, next) => {
       await next
@@ -237,7 +237,7 @@ describe('Koa Compose', function () {
 
   // https://github.com/koajs/compose/pull/27#issuecomment-143109739
   it('should compose w/ other compositions', () => {
-    var called = []
+    const called = []
 
     return compose([
       compose([
@@ -296,7 +296,7 @@ describe('Koa Compose', function () {
     const stack = []
 
     stack.push(async (context, next) => {
-      var val = await next()
+      const val = await next()
       expect(val).toEqual(2)
       return 1
     })

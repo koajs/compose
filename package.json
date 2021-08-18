@@ -14,13 +14,11 @@
   "dependencies": {},
   "devDependencies": {
     "codecov": "^3.0.0",
-    "jest": "^21.0.0",
-    "matcha": "^0.7.0",
-    "standard": "^10.0.3"
+    "jest": "^27.0.6",
+    "standard": "^16.0.3"
   },
   "scripts": {
-    "bench": "matcha bench/bench.js",
-    "lint": "standard --fix .",
+    "eslint": "standard --fix .",
     "test": "jest --forceExit --coverage"
   },
   "jest": {
