@@ -14,6 +14,24 @@ function isPromise (x) {
 }
 
 describe('Koa Compose', function () {
+  it('should only accept options as an optional object', () => {
+    for (const sample of [123, 'foo', true, Date, () => {}]) {
+      expect(() => compose([], sample)).toThrow(TypeError)
+    }
+
+    for (const sample of [undefined, null, {}]) {
+      expect(() => compose([], sample)).not.toThrow(TypeError)
+    }
+  })
+
+  it('should allow the Promise constructor to be overloaded', () => {
+    class CustomPromise extends Promise {}
+
+    expect(compose([], {
+      Promise: CustomPromise
+    })()).toBeInstanceOf(CustomPromise)
+  })
+
   it('should work', async () => {
     const arr = []
     const stack = []
