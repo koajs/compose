@@ -12,19 +12,27 @@ module.exports = compose
  * of all those which are passed.
  *
  * @param {Array} middleware
+ * @param {?Object} options
+ * @param {Function} [options.Promise= Promise]
  * @return {Function}
  * @api public
  */
 
-function compose (middleware) {
+function compose (middleware, options) {
   if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
 
+  if (options != null && typeof options !== 'object') {
+    throw new TypeError('options must be an object!')
+  }
+
+  const { Promise: _Promise = Promise } = options || {}
+
   /**
    * @param {Object} context
-   * @return {Promise}
+   * @return {PromiseLike}
    * @api public
    */
 
@@ -33,15 +41,15 @@ function compose (middleware) {
     let index = -1
     return dispatch(0)
     function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      if (i <= index) return _Promise.reject(new Error('next() called multiple times'))
       index = i
       let fn = middleware[i]
       if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
+      if (!fn) return _Promise.resolve()
       try {
-        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
+        return _Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
       } catch (err) {
-        return Promise.reject(err)
+        return _Promise.reject(err)
       }
     }
   }
