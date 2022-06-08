@@ -13,7 +13,7 @@ function isPromise (x) {
   return x && typeof x.then === 'function'
 }
 
-describe('Koa Compose', function () {
+function testBaseFunctionality() {
   it('should work', async () => {
     const arr = []
     const stack = []
@@ -86,10 +86,6 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should only accept an array', () => {
-    expect(() => compose()).toThrow(TypeError)
-  })
-
   it('should create next functions that return a Promise', function () {
     const stack = []
     const arr = []
@@ -110,10 +106,6 @@ describe('Koa Compose', function () {
 
   it('should work with 0 middleware', function () {
     return compose([])({})
-  })
-
-  it('should only accept middleware as functions', () => {
-    expect(() => compose([{}])).toThrow(TypeError)
   })
 
   it('should work when yielding at the end of the stack', async () => {
@@ -236,19 +228,6 @@ describe('Koa Compose', function () {
     ])({}).then(() => assert.deepEqual(called, [1, 2, 3]))
   })
 
-  it('should throw if next() is called multiple times', () => {
-    return compose([
-      async (ctx, next) => {
-        await next()
-        await next()
-      }
-    ])({}).then(() => {
-      throw new Error('boom')
-    }, (err) => {
-      assert(/multiple times/.test(err.message))
-    })
-  })
-
   it('should return a valid middleware', () => {
     let val = 0
     return compose([
@@ -327,6 +306,29 @@ describe('Koa Compose', function () {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
   })
+}
+
+function testDevErrors() {
+  it('should only accept an array', () => {
+    expect(() => compose()).toThrow(TypeError)
+  })
+
+  it('should only accept middleware as functions', () => {
+    expect(() => compose([{}])).toThrow(TypeError)
+  })
+
+  it('should throw if next() is called multiple times', () => {
+    return compose([
+      async (ctx, next) => {
+        await next()
+        await next()
+      }
+    ])({}).then(() => {
+      throw new Error('boom')
+    }, (err) => {
+      assert(/multiple times/.test(err.message))
+    })
+  })
 
   it('should detect disconnected promise chains', async () => {
     expect.hasAssertions()
@@ -347,4 +349,23 @@ describe('Koa Compose', function () {
       expect(err.message).toMatch('resolved before downstream')
     }
   })
+}
+describe('Koa Compose', function () {
+  const OLD_ENV = process.env;
+
+  beforeEach(() => {
+    jest.resetModules() // Most important - it clears the cache
+    process.env = { ...OLD_ENV, NODE_ENV: "production" }; // Make a copy
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV; // Restore old environment
+  });
+
+  testBaseFunctionality()
+})
+
+describe('Koa Compose - Dev', function () {
+  testBaseFunctionality()
+  testDevErrors()
 })
