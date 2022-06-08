@@ -1,12 +1,6 @@
 'use strict'
 
 /**
- * Expose compositor.
- */
-
-module.exports = compose
-
-/**
  * Compose `middleware` returning
  * a fully valid middleware comprised
  * of all those which are passed.
@@ -21,28 +15,43 @@ function compose (middleware) {
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
-
   /**
-   * @param {Object} context
+   * @param {Object} ctx
    * @return {Promise}
    * @api public
    */
+  return async (ctx, next) => {
+    const dispatch = async (i) => {
+      if (i > middleware.length) return
+      const fn = middleware[i] || next
+      if (!fn) return
 
-  return function (context, next) {
-    // last called middleware #
-    let index = -1
-    return dispatch(0)
-    function dispatch (i) {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-      index = i
-      let fn = middleware[i]
-      if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
-      try {
-        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
-      } catch (err) {
-        return Promise.reject(err)
+      let nextCalled = false
+      let nextResolved = false
+      const nextProxy = async () => {
+        if (nextCalled) throw Error('next() called multiple times')
+        nextCalled = true
+        try {
+          return await dispatch(i + 1)
+        } finally {
+          nextResolved = true
+        }
       }
+
+      const result = await fn(ctx, nextProxy)
+      if (nextCalled && !nextResolved) {
+        throw Error(
+          'middleware resolved before downstream.\n\tyou are probably missing an await or return'
+        )
+      }
+      return result
     }
+    return dispatch(0)
   }
 }
+
+/**
+ * Expose compositor.
+ */
+
+module.exports = compose

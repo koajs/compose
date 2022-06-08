@@ -95,7 +95,9 @@ describe('Koa Compose', function () {
     const arr = []
     for (let i = 0; i < 5; i++) {
       stack.push((context, next) => {
-        arr.push(next())
+        const result = next()
+        arr.push(result)
+        return result
       })
     }
 
@@ -324,5 +326,25 @@ describe('Koa Compose', function () {
     }).then(() => {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
+  })
+
+  it('should detect disconnected promise chains', async () => {
+    expect.hasAssertions()
+    const middleware = [
+      (ctx, next) => next(),
+      (ctx, next) => {
+        next()
+      },
+      async (ctx, next) => {
+        await wait(1)
+        return next()
+      }
+    ]
+    try {
+      await compose(middleware)({})
+    } catch (err) {
+      expect(err).toBeInstanceOf(Error)
+      expect(err.message).toMatch('resolved before downstream')
+    }
   })
 })
