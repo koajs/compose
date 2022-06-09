@@ -111,7 +111,7 @@ describe('Koa Compose', function () {
   })
 
   it('should only accept middleware as functions', () => {
-    const badTypes = [1, true, 'string', {}, undefined, Symbol()];
+    const badTypes = [1, true, 'string', {}, undefined, Symbol('test')];
     [...badTypes, []].forEach((badType) => {
       expect(() => compose([badType])).toThrow(TypeError)
     })
