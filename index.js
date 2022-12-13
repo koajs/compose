@@ -6,13 +6,15 @@
 
 module.exports = compose
 
+/** @typedef {import("koa").Middleware} Middleware */
+
 /**
  * Compose `middleware` returning
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {Array} middleware
- * @return {Function}
+ * @param {Middleware[]} middleware
+ * @return {Middleware}
  * @api public
  */
 
@@ -21,14 +23,7 @@ function compose (middleware) {
   for (const fn of middleware) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
-
-  /**
-   * @param {Object} context
-   * @return {Promise}
-   * @api public
-   */
-
-  return function (context, next) {
+  return function (ctx, next) {
     // last called middleware #
     let index = -1
     return dispatch(0)
@@ -39,7 +34,7 @@ function compose (middleware) {
       if (i === middleware.length) fn = next
       if (!fn) return Promise.resolve()
       try {
-        return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
+        return Promise.resolve(fn(ctx, dispatch.bind(null, i + 1)))
       } catch (err) {
         return Promise.reject(err)
       }
