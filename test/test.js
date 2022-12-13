@@ -86,10 +86,6 @@ describe('Koa Compose', function () {
     })
   })
 
-  it('should only accept an array', () => {
-    expect(() => compose()).toThrow(TypeError)
-  })
-
   it('should create next functions that return a Promise', function () {
     const stack = []
     const arr = []
@@ -107,11 +103,21 @@ describe('Koa Compose', function () {
   })
 
   it('should work with 0 middleware', function () {
-    return compose([])({})
+    return Promise.all([
+      compose()({}),
+      compose([])({}),
+      compose([], [])({})
+    ])
   })
 
   it('should only accept middleware as functions', () => {
-    expect(() => compose([{}])).toThrow(TypeError)
+    const badTypes = [1, true, 'string', {}, undefined, Symbol('test')];
+    [...badTypes, []].forEach((badType) => {
+      expect(() => compose([badType])).toThrow(TypeError)
+    })
+    badTypes.forEach((badType) => {
+      expect(() => compose(badType)).toThrow(TypeError)
+    })
   })
 
   it('should work when yielding at the end of the stack', async () => {
