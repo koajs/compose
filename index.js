@@ -26,8 +26,7 @@ const composeSlim = (middleware) => async (ctx, next) => {
  */
 
 const compose = (middleware) => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  if (isProduction) return composeSlim(middleware)
+  if (process.env.NODE_ENV === 'production') return composeSlim(middleware)
 
   if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
   for (const fn of middleware) {
