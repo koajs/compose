@@ -11,14 +11,14 @@ module.exports = compose
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {Array} middleware
+ * @param {...(Array | Function)} middleware
  * @return {Function}
  * @api public
  */
 
-function compose (middleware) {
-  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
-  for (const fn of middleware) {
+function compose (...middleware) {
+  const funcs = middleware.flat()
+  for (const fn of funcs) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
 
@@ -35,8 +35,8 @@ function compose (middleware) {
     function dispatch (i) {
       if (i <= index) return Promise.reject(new Error('next() called multiple times'))
       index = i
-      let fn = middleware[i]
-      if (i === middleware.length) fn = next
+      let fn = funcs[i]
+      if (i === funcs.length) fn = next
       if (!fn) return Promise.resolve()
       try {
         return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
