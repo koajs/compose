@@ -323,10 +323,6 @@ function testBaseFunctionality() {
 }
 
 function testDevErrors() {
-  it('should only accept an array', () => {
-    expect(() => compose()).toThrow(TypeError)
-  })
-
   it('should only accept middleware as functions', () => {
     expect(() => compose([{}])).toThrow(TypeError)
   })

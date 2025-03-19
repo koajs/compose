@@ -12,7 +12,7 @@ const composeSlim = (middleware) => async (ctx, next) => {
     if (!fn) return
     return await fn(ctx, dispatch(i + 1))
   }
-  return dispatch(0).call()
+  return dispatch(0)()
 }
 
 /**
@@ -27,11 +27,13 @@ const composeSlim = (middleware) => async (ctx, next) => {
 
 const compose = (...middleware) => {
   const funcs = middleware.flat()
-  if (process.env.NODE_ENV === 'production') return composeSlim(middleware)
 
   for (const fn of funcs) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
+
+  if (process.env.NODE_ENV === 'production') return composeSlim(funcs)
+
   return async (ctx, next) => {
     const dispatch = async (i) => {
       const fn = i === funcs.length
