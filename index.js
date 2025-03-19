@@ -20,23 +20,23 @@ const composeSlim = (middleware) => async (ctx, next) => {
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {Array} middleware
+ * @param {...(Array | Function)} middleware
  * @return {Function}
  * @api public
  */
 
-const compose = (middleware) => {
+const compose = (...middleware) => {
+  const funcs = middleware.flat()
   if (process.env.NODE_ENV === 'production') return composeSlim(middleware)
 
-  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
-  for (const fn of middleware) {
+  for (const fn of funcs) {
     if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!')
   }
   return async (ctx, next) => {
     const dispatch = async (i) => {
-      const fn = i === middleware.length
+      const fn = i === funcs.length
         ? next
-        : middleware[i]
+        : funcs[i]
       if (!fn) return
 
       let nextCalled = false
@@ -50,7 +50,6 @@ const compose = (middleware) => {
           nextResolved = true
         }
       }
-
       const result = await fn(ctx, nextProxy)
       if (nextCalled && !nextResolved) {
         throw Error(

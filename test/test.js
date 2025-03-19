@@ -105,7 +105,21 @@ function testBaseFunctionality() {
   })
 
   it('should work with 0 middleware', function () {
-    return compose([])({})
+    return Promise.all([
+      compose()({}),
+      compose([])({}),
+      compose([], [])({})
+    ])
+  })
+
+  it('should only accept middleware as functions', () => {
+    const badTypes = [1, true, 'string', {}, undefined, Symbol('test')];
+    [...badTypes, []].forEach((badType) => {
+      expect(() => compose([badType])).toThrow(TypeError)
+    })
+    badTypes.forEach((badType) => {
+      expect(() => compose(badType)).toThrow(TypeError)
+    })
   })
 
   it('should work when yielding at the end of the stack', async () => {
