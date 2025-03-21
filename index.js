@@ -15,13 +15,15 @@ const composeSlim = (middleware) => async (ctx, next) => {
   return dispatch(0)()
 }
 
+/** @typedef {import("koa").Middleware} Middleware */
+
 /**
  * Compose `middleware` returning
  * a fully valid middleware comprised
  * of all those which are passed.
  *
- * @param {...(Array | Function)} middleware
- * @return {Function}
+ * @param {...(Middleware | Middleware[])} middleware
+ * @return {Middleware}
  * @api public
  */
 
