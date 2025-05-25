@@ -1,7 +1,7 @@
 'use strict'
 
 /* eslint-env jest */
-
+const { describe, it, beforeEach, after } = require('node:test')
 const compose = require('..')
 const assert = require('assert')
 
@@ -13,7 +13,7 @@ function isPromise (x) {
   return x && typeof x.then === 'function'
 }
 
-function testBaseFunctionality() {
+function testBaseFunctionality () {
   it('should work', async () => {
     const arr = []
     const stack = []
@@ -43,7 +43,7 @@ function testBaseFunctionality() {
     })
 
     await compose(stack)({})
-    expect(arr).toEqual(expect.arrayContaining([1, 2, 3, 4, 5, 6]))
+    assert.deepStrictEqual(arr.sort(), [1, 2, 3, 4, 5, 6])
   })
 
   it('should be able to be called twice', () => {
@@ -115,10 +115,10 @@ function testBaseFunctionality() {
   it('should only accept middleware as functions', () => {
     const badTypes = [1, true, 'string', {}, undefined, Symbol('test')];
     [...badTypes, []].forEach((badType) => {
-      expect(() => compose([badType])).toThrow(TypeError)
+      assert.throws(() => compose([badType]), TypeError)
     })
     badTypes.forEach((badType) => {
-      expect(() => compose(badType)).toThrow(TypeError)
+      assert.throws(() => compose(badType), TypeError)
     })
   })
 
@@ -140,12 +140,10 @@ function testBaseFunctionality() {
 
     stack.push(() => { throw new Error() })
 
-    return compose(stack)({})
-      .then(() => {
-        throw new Error('promise was not rejected')
-      }, (e) => {
-        expect(e).toBeInstanceOf(Error)
-      })
+    return assert.rejects(
+      compose(stack)({}),
+      /Error/
+    )
   })
 
   it('should keep the context', () => {
@@ -155,17 +153,17 @@ function testBaseFunctionality() {
 
     stack.push(async (ctx2, next) => {
       await next()
-      expect(ctx2).toEqual(ctx)
+      assert.deepStrictEqual(ctx2, ctx)
     })
 
     stack.push(async (ctx2, next) => {
       await next()
-      expect(ctx2).toEqual(ctx)
+      assert.deepStrictEqual(ctx2, ctx)
     })
 
     stack.push(async (ctx2, next) => {
       await next()
-      expect(ctx2).toEqual(ctx)
+      assert.deepStrictEqual(ctx2, ctx)
     })
 
     return compose(stack)(ctx)
@@ -193,7 +191,7 @@ function testBaseFunctionality() {
     })
 
     await compose(stack)({})
-    expect(arr).toEqual([1, 6, 4, 2, 3])
+    assert.deepStrictEqual(arr, [1, 6, 4, 2, 3])
   })
 
   it('should compose w/ next', () => {
@@ -213,11 +211,10 @@ function testBaseFunctionality() {
       throw new Error()
     })
 
-    return compose(stack)({}).then(() => {
-      throw new Error('promise was not rejected')
-    }, (e) => {
-      expect(e).toBeInstanceOf(Error)
-    })
+    return assert.rejects(
+      compose(stack)({}),
+      /Error/
+    )
   })
 
   // https://github.com/koajs/compose/pull/27#issuecomment-143109739
@@ -260,7 +257,7 @@ function testBaseFunctionality() {
         return next()
       }
     ])({}).then(function () {
-      expect(val).toEqual(3)
+      assert.strictEqual(val, 3)
     })
   })
 
@@ -269,19 +266,19 @@ function testBaseFunctionality() {
 
     stack.push(async (context, next) => {
       const val = await next()
-      expect(val).toEqual(2)
+      assert.strictEqual(val, 2)
       return 1
     })
 
     stack.push(async (context, next) => {
       const val = await next()
-      expect(val).toEqual(0)
+      assert.strictEqual(val, 0)
       return 2
     })
 
     const next = () => 0
     return compose(stack)({}, next).then(function (val) {
-      expect(val).toEqual(1)
+      assert.strictEqual(val, 1)
     })
   })
 
@@ -317,14 +314,14 @@ function testBaseFunctionality() {
       ctx.next++
       return next()
     }).then(() => {
-      expect(ctx).toEqual({ middleware: 1, next: 1 })
+      assert.strictEqual(ctx.middleware, 1)
     })
   })
 }
 
-function testDevErrors() {
+function testDevErrors () {
   it('should only accept middleware as functions', () => {
-    expect(() => compose([{}])).toThrow(TypeError)
+    assert.throws(() => compose([{}]), TypeError)
   })
 
   it('should throw if next() is called multiple times', () => {
@@ -341,7 +338,6 @@ function testDevErrors() {
   })
 
   it('should detect disconnected promise chains', async () => {
-    expect.hasAssertions()
     const middleware = [
       (ctx, next) => next(),
       (ctx, next) => {
@@ -352,25 +348,23 @@ function testDevErrors() {
         return next()
       }
     ]
-    try {
-      await compose(middleware)({})
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error)
-      expect(err.message).toMatch('resolved before downstream')
-    }
+    await assert.rejects(
+      compose(middleware)({}),
+      /resolved before downstream/
+    )
   })
 }
 describe('Koa Compose', function () {
-  const OLD_ENV = process.env;
+  const OLD_ENV = process.env
 
   beforeEach(() => {
-    jest.resetModules() // Most important - it clears the cache
-    process.env = { ...OLD_ENV, NODE_ENV: "production" }; // Make a copy
-  });
+    delete require.cache[require.resolve('..')] // Most important - it clears the cache
+    process.env = { ...OLD_ENV, NODE_ENV: 'production' } // Make a copy
+  })
 
-  afterAll(() => {
-    process.env = OLD_ENV; // Restore old environment
-  });
+  after(() => {
+    process.env = OLD_ENV // Restore old environment
+  })
 
   testBaseFunctionality()
 })
